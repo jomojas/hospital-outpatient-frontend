@@ -1,24 +1,52 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import type { RouteRecordRaw } from 'vue-router'
+import MainLayout from '@/components/MainLayout.vue'
 
-const routes: RouteRecordRaw[] = [
-  // 登录页单独路由
+const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/Login/index.vue'),
-    meta: { requiresAuth: false }
+    component: () => import('@/views/Login/index.vue')
   },
-  // 404
   {
-    path: '/:pathMatch(.*)*',
-    name: 'NotFound',
-    component: () => import('@/views/NotFound/index.vue')
+    path: '/registration',
+    component: MainLayout,
+    children: [
+      {
+        path: '',
+        redirect: '/registration/register'
+      },
+      {
+        path: 'register',
+        name: 'Register',
+        component: () => import('@/views/Registration/Register.vue')
+      },
+      {
+        path: 'refund',
+        name: 'Refund',
+        component: () => import('@/views/Registration/Refund.vue')
+      },
+      {
+        path: 'charge',
+        name: 'Charge',
+        component: () => import('@/views/Registration/Charge.vue')
+      },
+      {
+        path: 'refund-charge',
+        name: 'RefundCharge',
+        component: () => import('@/views/Registration/RefundCharge.vue')
+      },
+      {
+        path: 'fee-record',
+        name: 'FeeRecord',
+        component: () => import('@/views/Registration/FeeRecord.vue')
+      }
+    ]
   }
+  // 其他科室和页面路由...
 ]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes
 })
 

@@ -1,0 +1,55 @@
+// 颜色变量
+$white: #ffffff;
+$black: #222831;
+$blue-50: #e3f2fd;
+$blue-100: #bbdefb;
+$blue-200: #90caf9;
+$blue-300: #64b5f6;
+$blue-400: #42a5f5;
+$blue-500: #2196f3;
+$blue-600: #1e88e5;
+$blue-700: #1976d2;
+$blue-800: #1565c0;
+$blue-900: #0d47a1;
+$gray-100: #f5f6fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+
+// 字体
+$font-family-base: 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+  'Microsoft YaHei', Arial, sans-serif;
+$font-family-inter: 'Inter', 'Segoe UI', Arial, sans-serif;
+$font-family-noto-sans-sc: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei',
+  Arial, sans-serif;
+$font-family-mono: 'JetBrains Mono', 'Fira Mono', 'Consolas', 'Menlo', monospace;
+
+// 字重
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+
+// 字号
+$font-size-12: 0.75rem; // 12px
+$font-size-14: 0.875rem; // 14px
+$font-size-16: 1rem; // 16px
+$font-size-18: 1.125rem; // 18px
+$font-size-20: 1.25rem; // 20px
+$font-size-24: 1.5rem; // 24px
+
+// 行高
+$line-height-base: 1.5;
+$line-height-title: 1.2;
+
+// 间距
+$spacing-4: 4px;
+$spacing-8: 8px;
+$spacing-12: 12px;
+$spacing-16: 16px;
+$spacing-24: 24px;
+$spacing-32: 32px;

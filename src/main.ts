@@ -7,11 +7,10 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import VChart from 'vue-echarts' // 引入 ECharts 组件
 
 // 引入样式系统
-import './styles/index.scss'
+import '@/styles/index.scss'
 
 import App from './App.vue'
-import router from './router'
-import { useAppStore } from './stores/app'
+import router from '@/router'
 
 const app = createApp(App)
 
@@ -25,9 +24,5 @@ app.use(pinia)
 app.use(router)
 app.use(ElementPlus, { locale: zhCn }) // 配置中文
 app.component('v-chart', VChart) // 注册 ECharts 组件
-
-// 初始化主题
-const appStore = useAppStore()
-appStore.initTheme()
 
 app.mount('#app')

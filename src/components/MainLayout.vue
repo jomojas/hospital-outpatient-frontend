@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import PageHeader from './PageHeader.vue'
-import SideBar from './SideBar.vue'
+import PageHeader from '@/components/PageHeader.vue'
+import Sidebar from '@/components/SideBar.vue'
 </script>
 
 <template>
@@ -34,7 +34,6 @@ import SideBar from './SideBar.vue'
 .header-container {
   height: 60px;
   padding: 0;
-  box-shadow: 0 2px 8px #f0f1f2;
   z-index: 10;
 }
 .body-container {
@@ -46,19 +45,19 @@ import SideBar from './SideBar.vue'
 .sidebar-container {
   width: 200px;
   min-width: 200px;
-  background: #fff;
+  background: $background-color;
   border-right: 1px solid #f0f0f0;
   height: 100%;
   overflow: auto;
 }
 .main-content {
   flex: 1 1 0;
-  background: #f5f6fa;
+  background: $background-color-secondary;
   overflow: auto;
   min-width: 0;
 }
 .content-wrapper {
-  padding: 24px;
+  padding: $padding-lg;
   min-width: 900px; /* 可根据实际需求调整 */
 }
 </style>

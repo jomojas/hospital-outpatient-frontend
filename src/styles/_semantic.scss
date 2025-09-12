@@ -1,1 +1,42 @@
-@use 'semantic' as *;
+@use 'tokens' as *;
+
+// 语义颜色
+$primary-color: $blue-600;
+$primary-hover: $blue-700;
+$primary-active: $blue-800;
+$success-color: #52c41a;
+$warning-color: #faad14;
+$error-color: #ff4d4f;
+$info-color: $blue-400;
+
+$text-color: $gray-800;
+$text-color-secondary: $gray-600;
+$text-color-disabled: $gray-400;
+
+$border-color: $gray-300;
+$border-color-light: $gray-200;
+$border-radius-base: 6px;
+
+$background-color: $white;
+$background-color-secondary: $gray-100;
+$background-color-hover: $blue-50;
+$background-color-active: $blue-400;
+
+// 语义字体族
+$font-family-title: $font-family-inter;
+$font-family-body: $font-family-noto-sans-sc;
+$font-family-code: $font-family-mono;
+
+// 语义字体
+$font-title: $font-size-20;
+$font-subtitle: $font-size-16;
+$font-body: $font-size-14;
+$font-caption: $font-size-12;
+
+// 语义间距
+$padding-base: $spacing-16;
+$padding-sm: $spacing-8;
+$padding-lg: $spacing-24;
+$margin-base: $spacing-16;
+$margin-sm: $spacing-8;
+$margin-lg: $spacing-24;
