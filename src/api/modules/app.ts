@@ -7,6 +7,7 @@ export interface LoginResponseData {
   departmentType: string
   token: string
   role: string
+  departmentName: string
 }
 
 export const login = (data: { username: string; password: string }) =>

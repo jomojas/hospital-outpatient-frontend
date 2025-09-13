@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { departmentMenus, type MenuItem } from '@/config/menu'
 import * as ElementPlusIcons from '@element-plus/icons-vue'
@@ -34,6 +34,7 @@ const router = useRouter()
 const activeMenu = computed(() => route.path)
 
 const handleMenu = (item: MenuItem) => {
+  appStore.setCurrentMenu(item)
   router.push(item.path)
 }
 </script>

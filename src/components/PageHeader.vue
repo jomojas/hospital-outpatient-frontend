@@ -3,14 +3,14 @@ import { computed, reactive, ref } from 'vue'
 import { useAppStore } from '@/store/app'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus'
-import { logout } from '@/api/modules/app'
+import { logout, changePassword } from '@/api/modules/app'
 import { useRouter } from 'vue-router'
 
 const appStore = useAppStore()
 const { loginData } = storeToRefs(appStore)
 
 const staffName = computed(() => loginData.value?.name || '')
-const department = computed(() => loginData.value?.departmentType || '')
+const department = computed(() => loginData.value?.departmentName || '')
 const lastLoginTime = computed(() => loginData.value?.lastLoginTime || '')
 
 const showChangePwdDialog = ref(false)
@@ -45,21 +45,29 @@ function resetChangePwdForm() {
   changePwdFormRef.value?.clearValidate()
 }
 
+const router = useRouter()
+
 function submitChangePassword() {
-  changePwdFormRef.value.validate((valid: boolean) => {
+  changePwdFormRef.value.validate(async (valid: boolean) => {
     if (!valid) return
-    // 这里调用修改密码的API
-    ElMessage.success('密码修改成功')
-    showChangePwdDialog.value = false
-    resetChangePwdForm()
+    try {
+      await changePassword({
+        oldPassword: changePwdForm.oldPassword,
+        newPassword: changePwdForm.newPassword
+      })
+      ElMessage.success('密码修改成功，请重新登录')
+      showChangePwdDialog.value = false
+      appStore.changePassword()
+      router.push('/login')
+    } catch (e) {
+      resetChangePwdForm()
+    }
   })
 }
 
 const onChangePassword = () => {
   showChangePwdDialog.value = true
 }
-
-const router = useRouter()
 
 const onLogout = async () => {
   try {

@@ -23,7 +23,16 @@ export const useAppStore = defineStore('app', () => {
   const logout = () => {
     // 清空 Pinia 中的登录信息
     loginData.value = null
-    currentMenu.value = []
+    currentMenu.value = null
+    // 清理 localStorage
+    localStorage.removeItem('loginData')
+    localStorage.removeItem('token')
+  }
+
+  const changePassword = () => {
+    // 清空 Pinia 中的登录信息
+    loginData.value = null
+    currentMenu.value = null
     // 清理 localStorage
     localStorage.removeItem('loginData')
     localStorage.removeItem('token')
@@ -34,6 +43,7 @@ export const useAppStore = defineStore('app', () => {
     setCurrentMenu,
     loginData,
     setLoginData,
-    logout
+    logout,
+    changePassword
   }
 })
