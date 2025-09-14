@@ -13,16 +13,16 @@ export interface PatientInfo {
 
 // 挂号请求体类型
 export interface RegistrationPayload {
-  patientId: number | null
-  departmentId: number | null
-  doctorId: number | null
+  patientId: number
+  departmentId: number
+  doctorId: number
   visitDate: string
   period: string
   numberType: string
   initQuota: number
   usedQuota: number
-  settlementTypeId: number | null
-  paymentMethodId: number | null
+  settlementTypeId: number
+  paymentMethodId: number
   payableAmount: number
   medicalRecordBook: number
 }
@@ -54,6 +54,7 @@ export interface Doctor {
   createTime: string
   isExpert: boolean
   initQuota: number
+  usedQuota: number
 }
 
 // 新增患者请求体类型
