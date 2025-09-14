@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus'
 import { logout, changePassword } from '@/api/modules/app'
 import { useRouter } from 'vue-router'
+import type { FormInstance } from 'element-plus'
 
 const appStore = useAppStore()
 const { loginData } = storeToRefs(appStore)
@@ -14,7 +15,7 @@ const department = computed(() => loginData.value?.departmentName || '')
 const lastLoginTime = computed(() => loginData.value?.lastLoginTime || '')
 
 const showChangePwdDialog = ref(false)
-const changePwdFormRef = ref()
+const changePwdFormRef = ref<FormInstance>()
 const changePwdForm = reactive({
   oldPassword: '',
   newPassword: '',
@@ -48,7 +49,7 @@ function resetChangePwdForm() {
 const router = useRouter()
 
 function submitChangePassword() {
-  changePwdFormRef.value.validate(async (valid: boolean) => {
+  changePwdFormRef.value?.validate(async (valid: boolean) => {
     if (!valid) return
     try {
       await changePassword({

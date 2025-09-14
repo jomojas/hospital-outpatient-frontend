@@ -1,4 +1,4 @@
-import { apiRequest } from '../request'
+import { apiRequest } from '@/api/request'
 
 // 登录
 export interface LoginResponseData {

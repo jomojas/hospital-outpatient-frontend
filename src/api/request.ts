@@ -26,15 +26,15 @@ request.interceptors.request.use(
       config.params = { ...config.params, _t: Date.now() }
     }
 
-    // 3. 开发环境打印请求信息
-    if (import.meta.env.DEV) {
-      console.log(
-        '📤 发送请求:',
-        config.method?.toUpperCase(),
-        config.url,
-        config.data || config.params
-      )
-    }
+    // // 3. 开发环境打印请求信息
+    // if (import.meta.env.DEV) {
+    //   console.log(
+    //     '📤 发送请求:',
+    //     config.method?.toUpperCase(),
+    //     config.url,
+    //     config.data || config.params
+    //   )
+    // }
 
     return config
   },
@@ -51,7 +51,7 @@ request.interceptors.response.use(
     // 成功响应处理
     const { code, data, message } = response.data
 
-    // 开发环境打印响应信息
+    // // 开发环境打印响应信息
     // if (import.meta.env.DEV) {
     //   console.log('📥 收到响应:', response.config.url, response.data)
     // }
@@ -60,11 +60,6 @@ request.interceptors.response.use(
     if (code === 200 || code === 0) {
       // data可以有数据也可以为空
       return data
-    } else if (code === 403) {
-      // token失效或未登录，强制跳转登录页
-      localStorage.removeItem('token')
-      router.push('/login') // 强制跳转登录页
-      return Promise.reject(new Error(message || '请重新登录'))
     } else {
       // 业务错误
       ElMessage.error(message || '请求失败')
@@ -79,6 +74,12 @@ request.interceptors.response.use(
     switch (status) {
       case 400:
         ElMessage.error(message || '请求参数错误')
+        break
+      case 403:
+        // token失效或未登录，强制跳转登录页
+        localStorage.removeItem('token')
+        localStorage.removeItem('loginData')
+        router.push('/login') // 强制跳转登录页
         break
       case 500:
         ElMessage.error(message || '服务器内部错误')
