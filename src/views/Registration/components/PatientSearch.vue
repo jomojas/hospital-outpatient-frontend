@@ -10,8 +10,13 @@ const searchQuery = ref({
 const rules = {
   name: [{ required: true, message: '请输入患者姓名', trigger: 'blur' }],
   idCard: [
-    { required: true, message: '请输入身份证号', trigger: 'blur' },
-    { type: 'number', message: '身份证号必须为数字', trigger: 'blur' }
+    { required: true, message: '身份证号不能为空', trigger: 'blur' },
+    {
+      type: 'string', // Keep it as a string
+      pattern: /^[0-9A-Z]+$/, // Regular expression to match numeric strings and uppercase letters
+      message: '身份证号只能包含数字和大写字母',
+      trigger: 'blur'
+    }
   ]
 }
 

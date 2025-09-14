@@ -70,7 +70,7 @@ export interface PatientRequest {
 
 // 根据姓名和身份证号搜索患者信息
 export function searchPatient(params: { name: string; idCard: string }) {
-  return apiRequest<PatientInfo | null>({
+  return apiRequest<PatientInfo[]>({
     url: '/patients/search',
     method: 'GET',
     params
