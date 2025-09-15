@@ -49,7 +49,7 @@ request.interceptors.response.use(
   (response) => {
     // console.log('响应拦截器:', response)
     // 成功响应处理
-    const { code, data, message } = response.data
+    const { code, data, message, meta } = response.data
 
     // // 开发环境打印响应信息
     // if (import.meta.env.DEV) {
@@ -58,8 +58,12 @@ request.interceptors.response.use(
 
     // 根据业务状态码判断
     if (code === 200 || code === 0) {
-      // data可以有数据也可以为空
-      return data
+      // Check if `meta` exists and return an object containing both `data` and `meta`
+      if (meta) {
+        return { data, meta } // Return both `data` and `meta` when `meta` exists
+      } else {
+        return data // Return only `data` if `meta` is not present
+      }
     } else {
       // 业务错误
       ElMessage.error(message || '请求失败')
