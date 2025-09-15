@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
+import type { PatientInfo } from '@/api/modules/Registration/Register'
 
-const props = defineProps({
-  patientFound: Boolean, // Flag to indicate if patient info is found
-  patientInfo: Object // Patient information object
-})
+const props = defineProps<{
+  patientFound: boolean
+  patientInfo: Partial<PatientInfo>
+}>()
 
 const emit = defineEmits(['open-register', 'add-patient']) // Events for registering and adding patient
 </script>
@@ -24,7 +25,7 @@ const emit = defineEmits(['open-register', 'add-patient']) // Events for registe
         type="primary"
         @click="$emit('open-register', props.patientInfo?.patientId)"
       >
-        挂号
+        点击挂号
       </el-button>
     </template>
     <template v-else>

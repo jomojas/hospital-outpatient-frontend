@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, toRaw } from 'vue'
 import PatientSearch from './components/PatientSearch.vue'
 import PatientCard from './components/PatientCard.vue'
 import AddPatientDialog from './components/AddPatientDialog.vue'
@@ -7,7 +7,9 @@ import RegistrationForm from './components/RegistrationForm.vue'
 import RegistrationCard from './components/RegistrationCard.vue'
 import type {
   RegistrationPayload,
-  PatientRequest
+  PatientRequest,
+  PatientInfo,
+  RegistrationResult
 } from '@/api/modules/Registration/Register'
 import {
   createRegistration,
@@ -17,33 +19,52 @@ import {
 
 // State for patient search
 const patientFound = ref(false)
-const patientInfo = ref<Record<string, any> | undefined>(undefined)
+// const patientInfo = ref<PatientInfo | null>(null) // Initialize as null
+const patientInfo = ref<Partial<PatientInfo>>({})
 
-// State for registration
-const registration = ref<RegistrationPayload | null>(null)
+const registrationResult = ref<RegistrationResult | null>(null)
 
-// State for AddPatientDialog visibility
 const addPatientDialogVisible = ref(false)
+const addRegistrationFormVisible = ref(false)
+const registrationCardVisible = ref(false)
 
 // Open AddPatientDialog
 function openAddPatientDialog() {
   addPatientDialogVisible.value = true
+  console.log('Add Patient Dialog opened')
 }
 
-// Handle patient addition
-function handlePatientAdded(newPatientInfo: any) {
-  patientInfo.value = newPatientInfo
-  patientFound.value = true
-  addPatientDialogVisible.value = false
+// Mapping for period localization
+const periodMap: Record<string, string> = {
+  MORNING: '上午',
+  AFTERNOON: '下午',
+  EVENING: '晚上'
+}
+
+// Mapping for numberType localization
+const numberTypeMap: Record<string, string> = {
+  GENERAL: '普通号',
+  SPECIALIST: '专家号'
 }
 
 // Handle registration creation
 async function handleRegister(payload: RegistrationPayload) {
   try {
-    const response = await createRegistration(payload) // Call the backend API
+    const transformedPayload = {
+      ...payload,
+      medicalRecordBook: payload.medicalRecordBook ? 1 : 0 // Convert Boolean to Integer
+    }
+    console.log('Creating registration with payload:', transformedPayload)
+    const response = await createRegistration(transformedPayload) // Call the backend API
     if (response) {
       alert('挂号成功！') // Notify the user of success
-      registration.value = payload // Update the registration state
+      // Localize period and numberType
+      response.period = periodMap[response.period] || response.period // Convert period to Chinese
+      response.numberType =
+        numberTypeMap[response.numberType] || response.numberType // Convert numberType to Chinese
+
+      registrationResult.value = response
+      registrationCardVisible.value = true // Show the registration Card
     } else {
       alert('挂号失败，请重试！') // Notify the user of failure
     }
@@ -58,12 +79,12 @@ async function handleSearchPatient(query: { name: string; idCard: string }) {
   try {
     const response = await searchPatient(query) // Call the backend API
     console.log('Search Patient response:', response)
-    if (response) {
+    if (response && response.length > 0) {
       patientInfo.value = response[0]
       console.log('Patient found:', patientInfo.value)
       patientFound.value = true
     } else {
-      patientInfo.value = undefined
+      patientInfo.value = {}
       patientFound.value = false
     }
   } catch (error) {
@@ -76,11 +97,12 @@ async function handleSearchPatient(query: { name: string; idCard: string }) {
 async function handleCreatePatient(patientData: PatientRequest) {
   try {
     const response = await createPatient(patientData) // Call the backend API
-    if (response) {
+    if (response && typeof response.patientId === 'number') {
+      console.log('Patient created with ID:', response)
       alert('患者创建成功！')
       patientInfo.value = {
         ...patientData,
-        patientId: response // Assign the patient ID from API response
+        patientId: toRaw(response.patientId) // Assign the patient ID from API response
       }
       patientFound.value = true // Update state to indicate the patient has been created
     } else {
@@ -96,7 +118,9 @@ async function handleCreatePatient(patientData: PatientRequest) {
 function handleOpenRegisterForm(patientId: number | undefined) {
   if (patientId) {
     console.log('Opening registration form for patient ID:', patientId)
-    // patientFound.value = true
+    patientInfo.value.patientId = patientId // Ensure patientId is set
+    addRegistrationFormVisible.value = true
+    console.log('addRegistrationFormVisible:', addRegistrationFormVisible.value)
   } else {
     alert('无效的患者ID，无法打开挂号表单！')
   }
@@ -118,18 +142,22 @@ function handleOpenRegisterForm(patientId: number | undefined) {
 
     <!-- Add Patient Dialog -->
     <AddPatientDialog
-      v-if="addPatientDialogVisible"
-      @save="handlePatientAdded"
+      v-model="addPatientDialogVisible"
+      @save="handleCreatePatient"
     />
 
     <!-- Registration Form -->
     <RegistrationForm
-      v-if="patientFound && !registration"
+      v-model="addRegistrationFormVisible"
+      :patientId="patientInfo?.patientId"
       @register="handleRegister"
     />
 
     <!-- Registration Card -->
-    <RegistrationCard v-if="registration" :registration="registration" />
+    <RegistrationCard
+      :visible="registrationCardVisible"
+      :registration="registrationResult"
+    />
   </div>
 </template>
 

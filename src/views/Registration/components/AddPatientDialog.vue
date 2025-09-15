@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, defineProps, reactive } from 'vue'
 import { generatePatientNo } from '@/api/modules/Registration/Register'
-import type { PatientRequest } from '@/api/modules/Registration/Register'
 
+const props = defineProps<{
+  modelValue: boolean
+}>()
+
+// Event emitter
+const emit = defineEmits(['save', 'update:modelValue'])
 // Patient info request data
-const newPatientInfo = ref<PatientRequest>({
+const newPatientInfoForm = reactive({
   patientNo: '',
   name: '',
   gender: '',
@@ -12,9 +17,6 @@ const newPatientInfo = ref<PatientRequest>({
   idCard: '',
   address: ''
 })
-
-// Dialog visibility state
-const dialogVisible = ref(false)
 
 // Validation rules
 const rules = {
@@ -34,35 +36,49 @@ const rules = {
   address: [{ required: false }]
 }
 
-// Reference to the form
-const addPatientForm = ref()
+const formRef = ref()
 
 // Generate patient number
 async function getGeneratedPatientNo() {
   try {
     const response = await generatePatientNo()
-    newPatientInfo.value.patientNo = response.patientNo
+    newPatientInfoForm.patientNo = response.patientNo
   } catch (error) {
     console.error('Failed to generate patient number:', error)
     alert('生成患者编号失败，请重试！')
   }
 }
 
+const resetForm = () => {
+  newPatientInfoForm.patientNo = ''
+  newPatientInfoForm.name = ''
+  newPatientInfoForm.gender = ''
+  newPatientInfoForm.birthday = ''
+  newPatientInfoForm.idCard = ''
+  newPatientInfoForm.address = ''
+}
+
+const handleCancel = () => {
+  resetForm()
+  emit('update:modelValue', false)
+}
+const handleClose = () => {
+  resetForm()
+  emit('update:modelValue', false)
+}
+
 // Submit patient info
 function submitPatient() {
-  addPatientForm.value.validate((valid: boolean) => {
+  formRef.value.validate((valid: boolean) => {
     if (valid) {
-      console.log('Submitting new patient info:', newPatientInfo.value)
-      emit('save', newPatientInfo.value) // Emit event to parent
-      dialogVisible.value = false // Close dialog after saving
+      console.log('Submitting new patient info:', newPatientInfoForm)
+      emit('save', newPatientInfoForm) // Emit event to parent
+      emit('update:modelValue', false)
     } else {
       console.log('Validation failed!')
     }
   })
 }
-
-// Event emitter
-const emit = defineEmits(['save'])
 
 onMounted(() => {
   getGeneratedPatientNo() // Generate patient number on mount
@@ -70,50 +86,56 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-dialog :visible.sync="dialogVisible" title="新增患者信息">
+  <el-dialog
+    :model-value="props.modelValue"
+    title="新增患者信息"
+    :before-close="handleClose"
+  >
     <el-form
-      :model="newPatientInfo"
+      :model="newPatientInfoForm"
       :rules="rules"
-      ref="addPatientForm"
+      ref="formRef"
       label-width="100px"
     >
       <el-form-item label="患者编号" prop="patientNo">
         <el-input
-          v-model="newPatientInfo.patientNo"
+          v-model="newPatientInfoForm.patientNo"
           placeholder="自动生成患者编号"
           disabled
         />
-        <el-button type="primary" @click="generatePatientNo"
-          >生成患者编号</el-button
-        >
       </el-form-item>
       <el-form-item label="姓名" prop="name">
-        <el-input v-model="newPatientInfo.name" placeholder="请输入姓名" />
+        <el-input v-model="newPatientInfoForm.name" placeholder="请输入姓名" />
       </el-form-item>
       <el-form-item label="性别" prop="gender">
-        <el-select v-model="newPatientInfo.gender" placeholder="选择性别">
+        <el-select v-model="newPatientInfoForm.gender" placeholder="选择性别">
           <el-option label="男" value="男" />
           <el-option label="女" value="女" />
         </el-select>
       </el-form-item>
       <el-form-item label="生日" prop="birthday">
         <el-date-picker
-          v-model="newPatientInfo.birthday"
+          v-model="newPatientInfoForm.birthday"
           placeholder="选择生日"
+          type="date"
+          value-format="YYYY-MM-DD"
         />
       </el-form-item>
       <el-form-item label="身份证号" prop="idCard">
         <el-input
-          v-model="newPatientInfo.idCard"
+          v-model="newPatientInfoForm.idCard"
           placeholder="请输入身份证号"
         />
       </el-form-item>
       <el-form-item label="地址" prop="address">
-        <el-input v-model="newPatientInfo.address" placeholder="请输入地址" />
+        <el-input
+          v-model="newPatientInfoForm.address"
+          placeholder="请输入地址"
+        />
       </el-form-item>
     </el-form>
     <div slot="footer">
-      <el-button @click="dialogVisible = false">取消</el-button>
+      <el-button @click="handleCancel">取消</el-button>
       <el-button type="primary" @click="submitPatient">保存</el-button>
     </div>
   </el-dialog>

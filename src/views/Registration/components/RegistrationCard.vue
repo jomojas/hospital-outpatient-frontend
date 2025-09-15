@@ -1,14 +1,12 @@
 <script setup lang="ts">
+import type { RegistrationResult } from '@/api/modules/Registration/Register'
 import { defineProps } from 'vue'
 
 // Props for the registration data
-const props = defineProps({
-  registration: {
-    type: Object,
-    required: true,
-    default: () => ({}) // Ensure a default object to avoid undefined issues
-  }
-})
+const props = defineProps<{
+  visible: boolean
+  registration: RegistrationResult | null
+}>()
 </script>
 
 <template>

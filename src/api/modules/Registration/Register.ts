@@ -29,9 +29,18 @@ export interface RegistrationPayload {
 
 // 挂号结果类型
 export interface RegistrationResult {
-  registrationId: number
-  visitId: number
-  transactionId: number
+  registrationId: number // 挂号记录ID
+  visitId: number // 就诊ID
+  transactionId: number // 交易记录ID
+  departmentName: string // 科室名称
+  doctorName: string // 医生姓名
+  visitDate: string // 就诊日期
+  period: string // 时段（上午/下午/晚上）
+  numberType: string // 号别（如 GENERAL）
+  settlementTypeName: string // 结算类别名称（如 医保）
+  paymentMethodName: string // 支付方式名称（如 现金）
+  medicalRecordBook: number // 是否需要病历本（0=否，1=是）
+  payableAmount: number // 应付金额（如 20.00）
 }
 
 // 科室类型
@@ -114,7 +123,7 @@ export function listDoctorsByDepartment(departmentId: number) {
 
 // 新增患者接口
 export function createPatient(data: PatientRequest) {
-  return apiRequest<number>({
+  return apiRequest<{ patientId: number }>({
     url: '/patients',
     method: 'POST',
     data
