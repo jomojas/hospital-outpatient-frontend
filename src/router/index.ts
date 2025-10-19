@@ -18,27 +18,27 @@ const routes = [
       {
         path: 'register',
         name: 'Register',
-        component: () => import('@/views/Registration/Register.vue')
+        component: () => import('@/views/Registration/Register/index.vue')
       },
       {
         path: 'refund',
         name: 'Refund',
-        component: () => import('@/views/Registration/Refund.vue')
+        component: () => import('@/views/Registration/Refund/index.vue')
       },
       {
         path: 'charge',
         name: 'Charge',
-        component: () => import('@/views/Registration/Charge.vue')
+        component: () => import('@/views/Registration/Charge/index.vue')
       },
       {
         path: 'refund-charge',
         name: 'RefundCharge',
-        component: () => import('@/views/Registration/RefundCharge.vue')
+        component: () => import('@/views/Registration/RefundCharge/index.vue')
       },
       {
         path: 'fee-record',
         name: 'FeeRecord',
-        component: () => import('@/views/Registration/FeeRecord.vue')
+        component: () => import('@/views/Registration/FeeRecord/index.vue')
       }
     ]
   }
