@@ -82,17 +82,12 @@ async function handleSortChange({
       @sort-change="handleSortChange"
       empty-text="暂无数据"
     >
-      <el-table-column
-        prop="registrationId"
-        label="挂号ID"
-        width="80"
-        sortable="custom"
-      />
+      <el-table-column prop="registrationId" label="挂号ID" width="80" />
 
       <el-table-column
         prop="patientName"
         label="患者姓名"
-        width="100"
+        width="120"
         sortable="custom"
       />
 
