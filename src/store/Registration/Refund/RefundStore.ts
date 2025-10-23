@@ -77,10 +77,8 @@ export const useRefundStore = defineStore('refund', () => {
 
   // ✅ 操作函数1：更新搜索筛选条件（变量A）
   function updateSearchFilters(filters: Partial<SearchFilters>) {
-    // console.log('更新searchFilters用filters:', filters)
     Object.assign(searchFilters.value, filters)
 
-    // console.log('更新后的searchFilters:', searchFilters.value)
     // 搜索时重置到第一页
     paginationSort.value.page = 1
   }
@@ -123,19 +121,12 @@ export const useRefundStore = defineStore('refund', () => {
       // 使用计算属性获取合并后的查询参数
       const params = queryParams.value
 
-      console.log('📊 查询参数:', params)
-
       const response: RegistrationRecordsResponse =
         await getRegistrationRecords(params)
 
       // 更新数据
       registrationRecords.value = response.data
       paginationMeta.value = response.meta
-
-      console.log('✅ 获取挂号记录成功:', {
-        records: response.data.length,
-        total: response.meta.total
-      })
 
       return response
     } catch (err) {
@@ -199,14 +190,7 @@ export const useRefundStore = defineStore('refund', () => {
       // ✅ 调用退号 API
       const response = await cancelRegistrationAPI(registrationId)
 
-      console.log('📞 退号API响应:', response)
-
       ElMessage.success('退号成功')
-
-      console.log('✅ 退号成功:', {
-        registrationId,
-        patientName: record.patientName
-      })
 
       // ✅ 重新获取数据以确保数据同步（移除了本地更新）
       await fetchRegistrationRecords()
@@ -215,7 +199,6 @@ export const useRefundStore = defineStore('refund', () => {
     } catch (err) {
       if (err === 'cancel') {
         // 用户取消退号
-        console.log('👤 用户取消退号操作')
         return false
       }
 
@@ -230,7 +213,6 @@ export const useRefundStore = defineStore('refund', () => {
 
   // ✅ 搜索功能：更新搜索条件并获取数据
   async function search(filters: Partial<SearchFilters>) {
-    console.log('即将使用filters更新searchFilters')
     updateSearchFilters(filters)
     await fetchRegistrationRecords()
   }

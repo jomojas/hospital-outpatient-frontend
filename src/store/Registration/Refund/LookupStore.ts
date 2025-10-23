@@ -91,15 +91,8 @@ export const useRefundLookupStore = defineStore('refundLookup', () => {
     departmentsError.value = null
 
     try {
-      console.log('📋 开始获取门诊科室列表...')
-
       const response = await listDepartments('OUTPATIENT')
       departments.value = response
-
-      console.log('✅ 获取科室列表成功:', {
-        count: response.length,
-        departments: response.map((d) => d.departmentName)
-      })
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : '获取科室列表失败'
@@ -123,15 +116,8 @@ export const useRefundLookupStore = defineStore('refundLookup', () => {
     doctorsError.value = null
 
     try {
-      console.log('👨‍⚕️ 开始获取医生列表...')
-
       const response = await listDoctors()
       doctors.value = response
-
-      console.log('✅ 获取医生列表成功:', {
-        count: response.length,
-        doctors: response.map((d) => `${d.name}(${d.staffId})`)
-      })
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : '获取医生列表失败'
@@ -150,18 +136,14 @@ export const useRefundLookupStore = defineStore('refundLookup', () => {
   // ✅ 初始化所有数据
   async function initialize() {
     if (initialized.value) {
-      console.log('📋 退号查询数据已初始化，跳过重复加载')
       return
     }
-
-    console.log('🚀 开始初始化退号查询数据...')
 
     try {
       // 并行加载科室和医生数据
       await Promise.all([fetchDepartments(), fetchDoctors()])
 
       initialized.value = true
-      console.log('✅ 退号查询数据初始化完成')
     } catch (error) {
       console.error('❌ 退号查询数据初始化失败:', error)
       ElMessage.error('初始化查询数据失败，请刷新页面重试')
@@ -170,8 +152,6 @@ export const useRefundLookupStore = defineStore('refundLookup', () => {
 
   // ✅ 重新加载所有数据
   async function refresh() {
-    console.log('🔄 刷新退号查询数据...')
-
     initialized.value = false
     await initialize()
   }

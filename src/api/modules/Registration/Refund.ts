@@ -15,7 +15,7 @@ export function getRegistrationRecords(params?: RegistrationQueryParams) {
 
 // ✅ 添加取消挂号的请求函数
 export function cancelRegistration(id: number) {
-  return apiRequest<{ code: number; message: string; data: null }>({
+  return apiRequest<{}>({
     url: `/registrations/${id}/cancel`,
     method: 'POST'
   })

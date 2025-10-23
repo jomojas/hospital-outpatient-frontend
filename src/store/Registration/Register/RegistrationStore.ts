@@ -64,8 +64,6 @@ export const useRegistrationStore = defineStore('registration', () => {
       patientInfo.value.name = name
       patientInfo.value.idCard = idCard
       patientInfo.value.patientNo = generatedNo.patientNo
-
-      console.log('searchClicked:', searchClicked.value)
     }
   }
 
