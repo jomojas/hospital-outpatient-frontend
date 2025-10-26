@@ -139,7 +139,7 @@ async function handleSortChange({
           <el-button
             v-if="canRefund(row.currentStatus)"
             type="danger"
-            link
+            size="small"
             @click="handleRefund(row.registrationId)"
             :loading="refundStore.loading"
           >

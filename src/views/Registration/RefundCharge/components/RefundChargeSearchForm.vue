@@ -1,20 +1,21 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
 import { Search, Refresh } from '@element-plus/icons-vue'
-import { useChargeStore } from '@/store/Registration/Charge/ChargeStore'
-import { useChargeLookupStore } from '@/store/Registration/Charge/LookupStore'
+import { useRefundChargeStore } from '@/store/Registration/RefundCharge/RefundChargeStore'
+import { useRefundChargeLookupStore } from '@/store/Registration/RefundCharge/LookupStore'
+import type { RefundableItemsQueryParams } from '@/types/Registration/RefundCharge'
 
 // Store
-const chargeStore = useChargeStore()
-const lookupStore = useChargeLookupStore()
+const refundStore = useRefundChargeStore()
+const lookupStore = useRefundChargeLookupStore()
 
 // 搜索表单
-const searchForm = reactive({
+const searchForm = reactive<Partial<RefundableItemsQueryParams>>({
   type: undefined,
   keyword: '',
   drugCategory: undefined,
   itemType: undefined,
-  sortBy: 'createTime',
+  sortBy: 'chargeTime',
   order: 'desc'
 })
 
@@ -32,15 +33,24 @@ watch(
 
 // 搜索处理
 async function handleSearch() {
+  // console.log('🔍 退费搜索，原始表单:', searchForm)
+
   // 过滤掉空值
   const params = Object.fromEntries(
-    Object.entries(searchForm).filter(
-      ([_, value]) => value !== undefined && value !== ''
-    )
+    Object.entries(searchForm).filter(([key, value]) => {
+      if (value === undefined || value === null || value === '') {
+        console.log(`过滤掉空值: ${key} = ${value}`)
+        return false
+      }
+      // console.log(`保留有效值: ${key} = ${value}`)
+      return true
+    })
   )
 
-  // 无论有没有搜索条件，都执行搜索
-  await chargeStore.search(params)
+  // console.log('📋 最终搜索参数:', params)
+
+  // 执行搜索
+  await refundStore.search(params)
 }
 
 // 重置处理
@@ -51,17 +61,17 @@ async function handleReset() {
     keyword: '',
     drugCategory: undefined,
     itemType: undefined,
-    sortBy: 'createTime',
+    sortBy: 'chargeTime',
     order: 'desc'
   })
 
-  // 重置数据（获取默认列表）
-  await chargeStore.reset()
+  // 重置数据
+  await refundStore.reset()
 }
 </script>
 
 <template>
-  <div class="charge-search-form">
+  <div class="refund-search-form">
     <el-card class="search-card">
       <template #header>
         <div class="card-header">
@@ -158,7 +168,7 @@ async function handleReset() {
                 style="width: 180px"
               >
                 <el-option label="按金额排序" value="totalAmount" />
-                <el-option label="按时间排序" value="createTime" />
+                <el-option label="按缴费时间排序" value="chargeTime" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -184,7 +194,7 @@ async function handleReset() {
               <el-button
                 type="primary"
                 @click="handleSearch"
-                :loading="chargeStore.loading"
+                :loading="refundStore.loading"
               >
                 <el-icon><Search /></el-icon>
                 搜索
@@ -200,17 +210,54 @@ async function handleReset() {
     </el-card>
   </div>
 </template>
-
 <style scoped lang="scss">
-.charge-search-form {
-  margin-bottom: 20px;
+@use '@/styles/tokens' as *;
+
+.refund-search-form {
+  margin-bottom: $margin-base;
 
   .search-card {
     .card-header {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: $margin-sm;
       font-weight: 600;
+      color: $text-color;
+    }
+  }
+
+  .search-form {
+    :deep(.el-form-item) {
+      margin-bottom: $margin-base;
+
+      .el-form-item__label {
+        text-align: left !important;
+        justify-content: flex-start !important;
+        color: $text-color;
+      }
+    }
+
+    :deep(.el-select) {
+      width: 100%;
+    }
+
+    :deep(.el-input) {
+      width: 100%;
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .refund-search-form {
+    .search-form {
+      :deep(.el-form-item) {
+        margin-bottom: $margin-sm;
+
+        .el-form-item__label {
+          padding-right: $margin-sm;
+        }
+      }
     }
   }
 }

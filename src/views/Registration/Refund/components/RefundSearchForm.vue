@@ -54,101 +54,128 @@ onMounted(async () => {
 
 <template>
   <el-card class="search-card" shadow="never">
-    <div class="search-title">
-      挂号记录查询
-      <span v-if="refundStore.loading" class="loading-text">正在查询...</span>
-    </div>
+    <template #header>
+      <div class="search-title">
+        <el-icon><Search /></el-icon>
+        <span>挂号记录查询</span>
+        <span v-if="refundStore.loading" class="loading-text">正在查询...</span>
+      </div>
+    </template>
 
-    <el-form :model="searchForm" :inline="true" label-width="80px">
-      <el-form-item label="挂号日期">
-        <el-date-picker
-          v-model="searchForm.date"
-          type="date"
-          placeholder="选择日期"
-          value-format="YYYY-MM-DD"
-          clearable
-          style="width: 200px"
-        />
-      </el-form-item>
+    <el-form
+      :model="searchForm"
+      label-width="80px"
+      label-position="left"
+      :inline="true"
+      class="search-form"
+    >
+      <!-- 第一行：挂号日期 + 科室 + 医生 -->
+      <el-row :gutter="20">
+        <el-col :xl="8" :lg="8" :md="12" :sm="24">
+          <el-form-item label="挂号日期">
+            <el-date-picker
+              v-model="searchForm.date"
+              type="date"
+              placeholder="选择日期"
+              value-format="YYYY-MM-DD"
+              clearable
+              style="width: 180px"
+            />
+          </el-form-item>
+        </el-col>
 
-      <el-form-item label="科室">
-        <el-select
-          v-model="searchForm.deptId"
-          placeholder="请选择科室"
-          clearable
-          style="width: 150px"
-        >
-          <el-option
-            v-for="option in lookupStore.departmentOptions"
-            :key="option.value"
-            :label="option.label"
-            :value="option.value"
-          />
-        </el-select>
-      </el-form-item>
+        <el-col :xl="8" :lg="8" :md="12" :sm="24">
+          <el-form-item label="科室">
+            <el-select
+              v-model="searchForm.deptId"
+              placeholder="请选择科室"
+              clearable
+              style="width: 180px"
+            >
+              <el-option
+                v-for="option in lookupStore.departmentOptions"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
 
-      <el-form-item label="医生">
-        <el-select
-          v-model="searchForm.doctorId"
-          placeholder="请选择医生"
-          clearable
-          style="width: 150px"
-        >
-          <el-option
-            v-for="option in lookupStore.doctorOptions"
-            :key="option.value"
-            :label="option.label"
-            :value="option.value"
-          >
-            <span>{{ option.label }}</span>
-            <span v-if="option.isExpert" class="expert-tag">专家</span>
-            <span style="float: right; color: #8492a6; font-size: 13px">
-              {{ option.departmentName }}
-            </span>
-          </el-option>
-        </el-select>
-      </el-form-item>
+        <el-col :xl="8" :lg="8" :md="12" :sm="24">
+          <el-form-item label="医生">
+            <el-select
+              v-model="searchForm.doctorId"
+              placeholder="请选择医生"
+              clearable
+              style="width: 180px"
+            >
+              <el-option
+                v-for="option in lookupStore.doctorOptions"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
+              >
+                <span>{{ option.label }}</span>
+                <span v-if="option.isExpert" class="expert-tag">专家</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">
+                  {{ option.departmentName }}
+                </span>
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
 
-      <el-form-item label="状态">
-        <el-select
-          v-model="searchForm.status"
-          placeholder="请选择状态"
-          clearable
-          style="width: 120px"
-        >
-          <el-option
-            v-for="option in lookupStore.statusOptions"
-            :key="option.value"
-            :label="option.label"
-            :value="option.value"
-          />
-        </el-select>
-      </el-form-item>
+      <!-- 第二行：状态 + 关键词 + 操作按钮 -->
+      <el-row :gutter="20">
+        <el-col :xl="8" :lg="8" :md="12" :sm="24">
+          <el-form-item label="状态">
+            <el-select
+              v-model="searchForm.status"
+              placeholder="请选择状态"
+              clearable
+              style="width: 180px"
+            >
+              <el-option
+                v-for="option in lookupStore.statusOptions"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
 
-      <el-form-item label="关键词">
-        <el-input
-          v-model="searchForm.keyword"
-          placeholder="科室名/患者姓名/医生姓名"
-          clearable
-          style="width: 200px"
-          @keyup.enter="handleSearch"
-        />
-      </el-form-item>
+        <el-col :xl="8" :lg="8" :md="12" :sm="24">
+          <el-form-item label="关键词">
+            <el-input
+              v-model="searchForm.keyword"
+              placeholder="科室名/患者姓名/医生姓名"
+              clearable
+              style="width: 180px"
+              @keyup.enter="handleSearch"
+            />
+          </el-form-item>
+        </el-col>
 
-      <el-form-item>
-        <el-button
-          type="primary"
-          @click="handleSearch"
-          :loading="refundStore.loading"
-        >
-          <el-icon><Search /></el-icon>
-          查询
-        </el-button>
-        <el-button @click="handleReset">
-          <el-icon><Refresh /></el-icon>
-          重置
-        </el-button>
-      </el-form-item>
+        <el-col :xl="8" :lg="8" :md="12" :sm="24">
+          <el-form-item style="margin-bottom: 0">
+            <el-button
+              type="primary"
+              @click="handleSearch"
+              :loading="refundStore.loading"
+            >
+              <el-icon><Search /></el-icon>
+              查询
+            </el-button>
+            <el-button @click="handleReset">
+              <el-icon><Refresh /></el-icon>
+              重置
+            </el-button>
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
 
     <!-- ✅ 显示统计信息 -->
@@ -157,7 +184,6 @@ onMounted(async () => {
     </div>
   </el-card>
 </template>
-
 <style scoped lang="scss">
 @use '@/styles/semantic' as *;
 
