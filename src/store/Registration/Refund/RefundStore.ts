@@ -77,7 +77,26 @@ export const useRefundStore = defineStore('refund', () => {
 
   // ✅ 操作函数1：更新搜索筛选条件（变量A）
   function updateSearchFilters(filters: Partial<SearchFilters>) {
-    Object.assign(searchFilters.value, filters)
+    // console.log('updateSearchFilters 中参数filters:', filters)
+
+    // 过滤掉 undefined 的值
+    const filteredParams = Object.fromEntries(
+      Object.entries(filters).filter(([_, value]) => value !== undefined)
+    ) as Partial<SearchFilters>
+
+    // console.log('📋 过滤undefined后的搜索参数：', filteredParams)
+
+    // ✅ 完全替换搜索筛选条件（而不是合并）
+    searchFilters.value = {
+      deptId: undefined,
+      doctorId: undefined,
+      status: undefined,
+      keyword: undefined,
+      date: undefined,
+      ...filteredParams // 用户输入的搜索条件
+    }
+
+    // console.log('✅ 更新后的searchFilters:', searchFilters.value)
 
     // 搜索时重置到第一页
     paginationSort.value.page = 1

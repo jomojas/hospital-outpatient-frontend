@@ -85,16 +85,22 @@ export const useRefundChargeStore = defineStore('refundCharge', () => {
     // 过滤掉 undefined 的值
     const filteredParams = Object.fromEntries(
       Object.entries(params).filter(([_, value]) => value !== undefined)
-    )
+    ) as Partial<RefundableItemsQueryParams>
 
     // console.log('📋 过滤undefined后的搜索参数：', filteredParams)
+
+    // ✅ 获取最终的 pageSize 值（优先级：传入参数 > 当前状态 > 默认值）
+    const finalPageSize =
+      filteredParams.pageSize ??
+      searchParams.value.pageSize ??
+      DEFAULT_REFUND_PARAMS.pageSize
 
     // ✅ 完全替换搜索参数（而不是合并）
     searchParams.value = {
       ...DEFAULT_REFUND_PARAMS, // 基础默认参数
       ...filteredParams, // 用户输入的搜索条件
-      page: 1, // 搜索时重置到第一页
-      pageSize: searchParams.value.pageSize || DEFAULT_REFUND_PARAMS.pageSize // 保持当前页面大小
+      page: filteredParams.page ?? 1, // 搜索时重置到第一页
+      pageSize: finalPageSize // 优先使用传入参数的pageSize
     }
 
     // console.log('✅ 更新后的搜索参数:', searchParams.value)

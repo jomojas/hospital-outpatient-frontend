@@ -29,6 +29,7 @@ async function handleSearch() {
     await refundStore.reset()
   } else {
     // 有搜索条件，则执行搜索
+    console.log('🔍 执行退费搜索，条件:', filters)
     await refundStore.search(filters)
   }
 }

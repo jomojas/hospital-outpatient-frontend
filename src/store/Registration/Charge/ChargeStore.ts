@@ -70,18 +70,30 @@ export const useChargeStore = defineStore('charge', () => {
 
   // ✅ 操作函数1：更新搜索参数
   function updateSearchParams(params: Partial<ChargeQueryParams>) {
+    // console.log('🔄 开始更新缴费查询参数:', params)
+
     // 过滤掉 undefined 的值
     const filteredParams = Object.fromEntries(
       Object.entries(params).filter(([_, value]) => value !== undefined)
-    )
+    ) as Partial<ChargeQueryParams>
+
+    // console.log('📋 过滤undefined后的查询参数：', filteredParams)
+
+    // ✅ 获取最终的 pageSize 值（优先级：传入参数 > 当前状态 > 默认值）
+    const finalPageSize =
+      filteredParams.pageSize ??
+      searchParams.value.pageSize ??
+      DEFAULT_CHARGE_PARAMS.pageSize
 
     // ✅ 完全替换搜索参数（而不是合并）
     searchParams.value = {
       ...DEFAULT_CHARGE_PARAMS, // 基础默认参数
       ...filteredParams, // 用户输入的搜索条件
-      page: 1, // 搜索时重置到第一页
-      pageSize: searchParams.value.pageSize || DEFAULT_CHARGE_PARAMS.pageSize // 保持当前页面大小
+      page: filteredParams.page ?? 1, // 搜索时重置到第一页
+      pageSize: finalPageSize // 优先使用传入参数的pageSize
     }
+
+    // console.log('✅ 更新后的缴费查询参数:', searchParams.value)
   }
 
   // ✅ 操作函数2：重置搜索参数

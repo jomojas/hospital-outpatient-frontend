@@ -11,18 +11,12 @@ const lookupStore = useChargeLookupStore()
 
 // ✅ 页面初始化
 onMounted(async () => {
-  console.log('🚀 缴费管理页面初始化...')
-
   try {
     // 1. 首先初始化下拉框数据（字典数据）
-    console.log('📋 初始化字典数据...')
     await lookupStore.initialize()
 
     // 2. 然后获取缴费项目列表（使用默认参数）
-    console.log('📊 获取缴费项目列表...')
     await chargeStore.refresh()
-
-    console.log('✅ 缴费管理页面初始化完成')
   } catch (error) {
     console.error('❌ 缴费管理页面初始化失败:', error)
   }
@@ -30,15 +24,11 @@ onMounted(async () => {
 
 // ✅ 页面清理
 onUnmounted(() => {
-  console.log('🧹 缴费管理页面清理...')
-
   // 清空选中项目
   chargeStore.clearSelectedItems()
 
   // 清除错误信息
   chargeStore.clearError()
-
-  console.log('✅ 缴费管理页面清理完成')
 })
 </script>
 
