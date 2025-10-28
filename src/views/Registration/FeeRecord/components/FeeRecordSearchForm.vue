@@ -10,9 +10,8 @@
 
       <el-form
         :model="searchForm"
-        label-width="100px"
-        label-position="left"
-        :inline="true"
+        label-width="80px"
+        label-position="right"
         @submit.prevent="handleSearch"
         class="search-form"
       >
