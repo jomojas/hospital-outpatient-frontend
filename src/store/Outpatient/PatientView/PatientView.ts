@@ -179,6 +179,31 @@ export const usePatientViewStore = defineStore('patientView', () => {
     })
   }
 
+  // ✅ 操作函数2.1：处理患者详情数据（状态转换）
+  function enhancePatientDetailData(
+    rawPatientDetail: PatientDetailInfo
+  ): PatientDetailInfo & {
+    frontendStatus: FrontendPatientStatusType
+    statusDisplay: {
+      label: string
+      type: string
+      color: string
+    }
+  } {
+    const frontendStatus = mapBackendStatusToFrontend(rawPatientDetail.status)
+    const statusDisplay = getStatusDisplayInfo(rawPatientDetail.status)
+
+    return {
+      ...rawPatientDetail,
+      frontendStatus,
+      statusDisplay: {
+        label: statusDisplay.label,
+        type: statusDisplay.type,
+        color: statusDisplay.color
+      }
+    }
+  }
+
   // ✅ 操作函数3：获取状态统计数据
   async function fetchStatusCount() {
     if (statusCountLoading.value) {
@@ -278,7 +303,7 @@ export const usePatientViewStore = defineStore('patientView', () => {
     await search({ status: frontendStatus })
   }
 
-  // ✅ 操作函数7：获取患者详情
+  // ✅ 操作函数7：获取患者详情（修正版）
   async function fetchPatientDetail(medicalNo: string) {
     if (detailLoading.value) {
       console.log('⏳ 正在加载患者详情中，跳过重复请求')
@@ -292,7 +317,10 @@ export const usePatientViewStore = defineStore('patientView', () => {
       console.log('🔍 获取患者详情，病历号:', medicalNo)
       const response = await getPatientDetailByMedicalNo(medicalNo)
 
-      patientDetail.value = response
+      // ✅ 对患者详情数据进行状态转换处理
+      const enhancedPatientDetail = enhancePatientDetailData(response)
+      patientDetail.value = enhancedPatientDetail
+
       console.log('✅ 患者详情获取成功:', patientDetail.value)
     } catch (err) {
       const errorMessage =

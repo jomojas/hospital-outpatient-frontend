@@ -263,26 +263,87 @@ export const SEARCH_TIPS = [
   }
 ] as const
 
-// ✅ 患者信息扩展字段（可用于详情显示）
+// ✅ 患者详细信息（基于数据库 patient 表结构）
 export interface PatientDetailInfo extends DoctorPatient {
-  /** 年龄 */
-  age?: number
+  /** 患者ID */
+  patientId?: number
+  /** 患者编号 */
+  patientNo?: string
   /** 性别 */
-  gender?: 'MALE' | 'FEMALE'
-  /** 联系电话 */
-  phone?: string
-  /** 科室名称 */
-  departmentName?: string
-  /** 医生姓名 */
-  doctorName?: string
-  /** 挂号费用 */
-  registrationFee?: number
-  /** 是否已缴费 */
-  isPaid?: boolean
-  /** 创建时间 */
-  createdAt?: string
-  /** 更新时间 */
-  updatedAt?: string
+  gender?: '男' | '女'
+  /** 生日 */
+  birthday?: string
+  /** 身份证号 */
+  idCard?: string
+  /** 地址 */
+  address?: string
+  /** 年龄（计算字段） */
+  age?: number
+}
+
+// ✅ 患者基础信息（对应数据库 patient 表）
+export interface PatientBaseInfo {
+  /** 患者ID */
+  patientId: number
+  /** 患者编号 */
+  patientNo: string
+  /** 患者姓名 */
+  name: string
+  /** 性别 */
+  gender: '男' | '女'
+  /** 生日 */
+  birthday: string
+  /** 身份证号 */
+  idCard: string
+  /** 地址 */
+  address: string
+}
+
+// ✅ 年龄计算函数
+export function calculateAge(birthday?: string): number | undefined {
+  if (!birthday) return undefined
+
+  try {
+    const birthDate = new Date(birthday)
+    const today = new Date()
+    let age = today.getFullYear() - birthDate.getFullYear()
+    const monthDiff = today.getMonth() - birthDate.getMonth()
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--
+    }
+
+    return age >= 0 ? age : undefined
+  } catch {
+    return undefined
+  }
+}
+
+// ✅ 地址简化函数
+export function formatAddress(address?: string): string {
+  if (!address) return '暂无'
+
+  // 如果地址过长，只显示前20个字符
+  if (address.length > 20) {
+    return `${address.substring(0, 20)}...`
+  }
+
+  return address
+}
+
+// ✅ 身份证号脱敏函数
+export function maskIdCard(idCard?: string): string {
+  if (!idCard) return '暂无'
+  if (idCard.length < 8) return idCard
+
+  const start = idCard.substring(0, 4)
+  const end = idCard.substring(idCard.length - 4)
+  const middle = '*'.repeat(idCard.length - 8)
+
+  return `${start}${middle}${end}`
 }
 
 // ✅ 后端状态统计响应类型
