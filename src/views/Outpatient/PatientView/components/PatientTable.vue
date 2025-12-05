@@ -6,11 +6,14 @@ import {
   Calendar,
   Document
 } from '@element-plus/icons-vue'
+import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { usePatientViewStore } from '@/store/Outpatient/PatientView/PatientView'
+// ✅ 移除不再需要的 getCaseByRegistrationId 引用
 import {
   FrontendPatientStatus,
+  BackendPatientStatus,
   calculateAge,
   formatAddress,
   maskIdCard,
@@ -24,6 +27,15 @@ const patientViewStore = usePatientViewStore()
 // 路由实例
 const router = useRouter()
 
+// ✅ 主诉文字截断长度
+const COMPLAINT_MAX_LENGTH = 15
+
+// ✅ 定义操作类型
+type PatientAction = '初诊' | '复诊' | '继续初诊' | '病案查看' | '开设处方'
+
+// 本地状态管理
+const jumpLoading = ref(false)
+
 // 格式化日期
 function formatDate(dateString: string): string {
   if (!dateString) return ''
@@ -35,53 +47,139 @@ function formatDate(dateString: string): string {
   })
 }
 
-// 判断是否可以开始诊疗
-function canStartConsultation(patient: EnhancedDoctorPatient): boolean {
+// ✅ 格式化主诉内容（截断显示）
+function formatComplaint(complaint: string): string {
+  if (!complaint) return ''
+
+  if (complaint.length <= COMPLAINT_MAX_LENGTH) {
+    return complaint
+  }
+
+  return `${complaint.substring(0, COMPLAINT_MAX_LENGTH)}...`
+}
+
+/*************** 操作按钮判断函数 *****************/
+
+// 判断是否是待初诊
+function canStartInitial(patient: EnhancedDoctorPatient): boolean {
+  return patient.frontendStatus === FrontendPatientStatus.WAITING_INITIAL
+}
+
+// ✅ 判断是否是真正的待复诊 (看结果)
+function canStartRevisit(patient: EnhancedDoctorPatient): boolean {
+  // 前端状态是“待复诊” 且 后端状态是 “待复诊”
   return (
-    patient.frontendStatus === FrontendPatientStatus.WAITING_INITIAL ||
-    patient.frontendStatus === FrontendPatientStatus.WAITING_REVISIT
+    patient.frontendStatus === FrontendPatientStatus.WAITING_REVISIT &&
+    patient.status === BackendPatientStatus.WAITING_FOR_REVISIT
   )
 }
 
+// ✅ 判断是否是已确诊待开方
+function canPrescribe(patient: EnhancedDoctorPatient): boolean {
+  // 前端状态是“待复诊” 且 后端状态是 “已复诊”
+  return (
+    patient.frontendStatus === FrontendPatientStatus.WAITING_REVISIT &&
+    patient.status === BackendPatientStatus.REVISITED
+  )
+}
+
+// 继续诊疗 (保持不变)
+function canContinueConsultation(patient: EnhancedDoctorPatient): boolean {
+  return patient.frontendStatus === FrontendPatientStatus.AFTER_INITIAL
+}
+
+// 查看病案 (保持不变)
+function canViewMedicalCase(patient: EnhancedDoctorPatient): boolean {
+  return patient.frontendStatus === FrontendPatientStatus.REVISIT_COMPLETED
+}
+
+/*************** 操作按钮处理函数 *****************/
+
+// ✅ 统一的患者操作处理函数
+async function handlePatientAction(
+  patient: EnhancedDoctorPatient,
+  action: PatientAction
+) {
+  // 防重复点击
+  if (jumpLoading.value) {
+    return
+  }
+
+  if (!patient.registrationId) {
+    ElMessage.warning('挂号ID缺失，无法进行操作')
+    return
+  }
+
+  try {
+    jumpLoading.value = true
+
+    // ✅ 执行跳转 - 使用 params 传递 visitId
+    // 路由配置: /workspace/:visitId/case-home
+    // 不需要 query 参数，工作台布局会自动加载上下文
+    await router.push({
+      name: 'CaseHomepage',
+      params: {
+        visitId: patient.registrationId
+      }
+    })
+
+    // ✅ 成功提示
+    const actionMessages: Record<PatientAction, string> = {
+      初诊: `开始为患者 ${patient.name} 进行初诊`,
+      复诊: `开始为患者 ${patient.name} 进行复诊`,
+      继续初诊: `继续为患者 ${patient.name} 进行诊疗`,
+      病案查看: `正在查看患者 ${patient.name} 的病案`,
+      开设处方: `正在为患者 ${patient.name} 开设处方`
+    }
+
+    ElMessage.success(actionMessages[action])
+  } catch (error) {
+    console.error(`❌ ${action}操作失败:`, error)
+    ElMessage.error(`${action}操作失败，请稍后重试`)
+  } finally {
+    jumpLoading.value = false
+  }
+}
+
+// 处理开始初诊
+function handleStartInitial(patient: EnhancedDoctorPatient) {
+  handlePatientAction(patient, '初诊')
+}
+
+// 处理开始复诊
+function handleStartRevisit(patient: EnhancedDoctorPatient) {
+  handlePatientAction(patient, '复诊')
+}
+
+// ✅ 处理继续初诊
+function handleContinueConsultation(patient: EnhancedDoctorPatient) {
+  handlePatientAction(patient, '继续初诊')
+}
+
+// ✅ 处理查看病案
+function handleViewMedicalCase(patient: EnhancedDoctorPatient) {
+  handlePatientAction(patient, '病案查看')
+}
+
+// ✅ 处理开设处方
+function handlePrescription(patient: EnhancedDoctorPatient) {
+  // 这里虽然路由是一样的，但为了语义清晰，我们传不同的 action
+  handlePatientAction(patient, '开设处方')
+
+  // 注：进入工作台后，虽然默认进首页，但医生可以手动点到处方页。
+  // 如果你想做得更智能，可以在这里存个 flag 到 sessionStorage，
+  // 让工作台加载后自动跳转到处方页，不过目前先保持统一跳首页即可。
+}
+
+/*************** 其他功能函数 *****************/
 // 行点击处理
 function handleRowClick(row: EnhancedDoctorPatient) {
-  console.log('👆 点击患者行:', row.name, row.medicalNo)
   handleViewDetail(row)
 }
 
 // 查看详情
 function handleViewDetail(patient: EnhancedDoctorPatient) {
-  console.log('👁️ 查看患者详情:', patient.name, patient.medicalNo)
   patientViewStore.openPatientDetail(patient.medicalNo)
-}
-
-// 开始诊疗
-function handleStartConsultation(patient: EnhancedDoctorPatient) {
-  console.log('🩺 开始诊疗:', patient.name, patient.medicalNo)
-
-  const actionText =
-    patient.frontendStatus === FrontendPatientStatus.WAITING_INITIAL
-      ? '初诊'
-      : '复诊'
-
-  try {
-    // ✅ 跳转到病案首页，并传递患者信息
-    router.push({
-      name: 'CaseHomepage',
-      query: {
-        medicalNo: patient.medicalNo,
-        patientName: patient.name,
-        action: actionText
-      }
-    })
-
-    ElMessage.success(`开始为患者 ${patient.name} 进行${actionText}`)
-
-    console.log('✅ 跳转到病案首页成功')
-  } catch (error) {
-    console.error('❌ 跳转到病案首页失败:', error)
-    ElMessage.error('跳转失败，请重试')
-  }
 }
 
 // 重试获取详情
@@ -190,7 +288,16 @@ async function handleCurrentChange(page: number) {
             <div class="complaint-text">
               <template v-if="row.complaint">
                 <el-icon><Document /></el-icon>
-                <span>{{ row.complaint }}</span>
+                <el-tooltip
+                  :content="row.complaint"
+                  placement="top"
+                  :disabled="row.complaint.length <= COMPLAINT_MAX_LENGTH"
+                  effect="dark"
+                >
+                  <span class="complaint-content">{{
+                    formatComplaint(row.complaint)
+                  }}</span>
+                </el-tooltip>
               </template>
               <template v-else>
                 <span class="no-complaint">暂无主诉</span>
@@ -200,22 +307,72 @@ async function handleCurrentChange(page: number) {
         </el-table-column>
 
         <!-- 操作 -->
-        <el-table-column label="操作" width="200" align="center" fixed="right">
+        <el-table-column label="操作" width="280" align="center" fixed="right">
           <template #default="{ row }">
+            <!-- 详情 (常驻) -->
             <el-button
               type="primary"
               size="small"
               @click.stop="handleViewDetail(row)"
             >
-              查看详情
+              详情
             </el-button>
+
+            <!-- 1. 待初诊 -> 开始初诊 (绿色) -->
             <el-button
-              v-if="canStartConsultation(row)"
+              v-if="canStartInitial(row)"
               type="success"
               size="small"
-              @click.stop="handleStartConsultation(row)"
+              :loading="jumpLoading"
+              @click.stop="handleStartInitial(row)"
             >
-              开始诊疗
+              开始初诊
+            </el-button>
+
+            <!-- 2. 待复诊 -> 开始复诊 (深蓝/主色) -->
+            <el-button
+              v-if="canStartRevisit(row)"
+              type="primary"
+              size="small"
+              :loading="jumpLoading"
+              @click.stop="handleStartRevisit(row)"
+            >
+              开始复诊
+            </el-button>
+
+            <!-- 3. 已确诊 -> 开设处方 (橙色/警告色，起到提示作用) -->
+            <el-button
+              v-if="canPrescribe(row)"
+              type="warning"
+              size="small"
+              :loading="jumpLoading"
+              @click.stop="handlePrescription(row)"
+            >
+              开设处方
+            </el-button>
+
+            <!-- 4. 初诊后/检查中 -> 继续初诊 (橙色) -->
+            <el-button
+              v-if="canContinueConsultation(row)"
+              type="warning"
+              size="small"
+              plain
+              :loading="jumpLoading"
+              @click.stop="handleContinueConsultation(row)"
+            >
+              继续初诊
+            </el-button>
+
+            <!-- 5. 复诊结束 -> 查看病案 (灰色) -->
+            <el-button
+              v-if="canViewMedicalCase(row)"
+              type="info"
+              size="small"
+              plain
+              :loading="jumpLoading"
+              @click.stop="handleViewMedicalCase(row)"
+            >
+              查看病案
             </el-button>
           </template>
         </el-table-column>
@@ -419,6 +576,7 @@ async function handleCurrentChange(page: number) {
     </el-dialog>
   </div>
 </template>
+
 <style scoped lang="scss">
 @use '@/styles/tokens' as *;
 
@@ -649,62 +807,6 @@ async function handleCurrentChange(page: number) {
       font-family: $font-family-title;
       font-weight: 600;
       color: $text-color;
-    }
-  }
-}
-
-// 响应式设计
-@media (max-width: 768px) {
-  .patient-table {
-    .table-header {
-      flex-direction: column;
-      gap: $margin-sm;
-      align-items: stretch;
-
-      .header-left,
-      .header-right {
-        justify-content: center;
-      }
-    }
-
-    .pagination-wrapper {
-      margin-top: $margin-base;
-    }
-  }
-
-  :deep(.el-table) {
-    font-size: $font-caption;
-  }
-
-  :deep(.el-button) {
-    padding: 4px 8px;
-    font-size: 12px;
-  }
-
-  :deep(.el-dialog) {
-    width: 95% !important;
-    margin: 5vh auto !important;
-  }
-
-  .patient-detail-content {
-    .detail-info {
-      .info-section {
-        padding: $padding-sm;
-
-        .section-title {
-          font-size: $font-body;
-        }
-
-        .info-item {
-          flex-direction: column;
-          align-items: flex-start;
-
-          .label {
-            width: auto;
-            margin-bottom: 2px;
-          }
-        }
-      }
     }
   }
 }

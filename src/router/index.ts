@@ -1,5 +1,10 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, RouterView } from 'vue-router'
 import MainLayout from '@/components/MainLayout.vue'
+// import PageHeader from '@/components/PageHeader.vue'
+
+// 引入新布局
+import SimpleHeaderLayout from '@/components/SimpleHeaderLayout.vue'
+import DoctorWorkspaceLayout from '@/components/DoctorWorkspaceLayout.vue'
 
 const routes = [
   // ✅ 根路径重定向到登录页
@@ -83,123 +88,100 @@ const routes = [
       }
     ]
   },
-  // ✅ 门诊医生路由配置
+  // ✅ 门诊医生路由配置 (修改部分)
   {
     path: '/outpatient',
-    component: MainLayout,
+    component: RouterView,
     meta: {
       title: '门诊医生',
       icon: 'Stethoscope',
       requiresAuth: true
     },
+    redirect: '/outpatient/patient-view',
     children: [
-      {
-        path: '',
-        redirect: '/outpatient/patient-view'
-      },
-      // 患者查看
+      // 1. 患者查看 (使用 SimpleHeaderLayout)
       {
         path: 'patient-view',
-        name: 'PatientView',
-        component: () => import('@/views/Outpatient/PatientView/index.vue'),
-        meta: {
-          title: '患者查看',
-          icon: 'User',
-          requiresAuth: true
-        }
+        // 这里把 Layout 作为路由组件
+        component: SimpleHeaderLayout,
+        children: [
+          {
+            path: '', // 默认渲染 index.vue
+            name: 'PatientView',
+            component: () => import('@/views/Outpatient/PatientView/index.vue'),
+            meta: { title: '患者查看', icon: 'User' }
+          }
+        ]
       },
-      // 医生诊疗 - 病案首页
+
+      // 2. 医生诊疗工作台 (使用 DoctorWorkspaceLayout)
       {
-        path: 'medical-treatment/case-homepage',
-        name: 'CaseHomepage',
-        component: () =>
-          import('@/views/Outpatient/MedicalTreatment/CaseHomepage/index.vue'),
-        meta: {
-          title: '病案首页',
-          icon: 'Document',
-          requiresAuth: true,
-          parentPath: '/outpatient/medical-treatment'
-        }
-      },
-      // 医生诊疗 - 检查申请
-      {
-        path: 'medical-treatment/examination-request',
-        name: 'ExaminationRequest',
-        component: () =>
-          import(
-            '@/views/Outpatient/MedicalTreatment/ExaminationRequest/index.vue'
-          ),
-        meta: {
-          title: '检查申请',
-          icon: 'DocumentAdd',
-          requiresAuth: true,
-          parentPath: '/outpatient/medical-treatment'
-        }
-      },
-      // 医生诊疗 - 结果查看
-      {
-        path: 'medical-treatment/result-view',
-        name: 'ResultView',
-        component: () =>
-          import('@/views/Outpatient/MedicalTreatment/ResultView/index.vue'),
-        meta: {
-          title: '结果查看',
-          icon: 'View',
-          requiresAuth: true,
-          parentPath: '/outpatient/medical-treatment'
-        }
-      },
-      // 医生诊疗 - 门诊确诊
-      {
-        path: 'medical-treatment/diagnosis-confirm',
-        name: 'DiagnosisConfirm',
-        component: () =>
-          import(
-            '@/views/Outpatient/MedicalTreatment/DiagnosisConfirm/index.vue'
-          ),
-        meta: {
-          title: '门诊确诊',
-          icon: 'CircleCheck',
-          requiresAuth: true,
-          parentPath: '/outpatient/medical-treatment'
-        }
-      },
-      // 医生诊疗 - 开设处方
-      {
-        path: 'medical-treatment/prescription',
-        name: 'Prescription',
-        component: () =>
-          import('@/views/Outpatient/MedicalTreatment/Prescription/index.vue'),
-        meta: {
-          title: '开设处方',
-          icon: 'EditPen',
-          requiresAuth: true,
-          parentPath: '/outpatient/medical-treatment'
-        }
-      },
-      // 医生诊疗 - 费用查询
-      {
-        path: 'medical-treatment/fee-inquiry',
-        name: 'FeeInquiry',
-        component: () =>
-          import('@/views/Outpatient/MedicalTreatment/FeeInquiry/index.vue'),
-        meta: {
-          title: '费用查询',
-          icon: 'Money',
-          requiresAuth: true,
-          parentPath: '/outpatient/medical-treatment'
-        }
-      },
-      // 看诊记录
-      {
-        path: 'visit-records',
-        name: 'VisitRecords',
-        component: () => import('@/views/Outpatient/VisitRecords/index.vue'),
-        meta: {
-          title: '看诊记录',
-          icon: 'Notebook',
-          requiresAuth: true
-        }
+        path: 'workspace/:visitId', // 必须带 visitId
+        component: DoctorWorkspaceLayout,
+        meta: { title: '诊疗工作台' },
+        redirect: { name: 'CaseHomepage' }, // 默认进病案首页
+        children: [
+          // 2.1 病案首页
+          {
+            path: 'case-home',
+            name: 'CaseHomepage',
+            component: () =>
+              import(
+                '@/views/Outpatient/MedicalTreatment/CaseHomepage/index.vue'
+              ),
+            meta: { title: '病案首页', icon: 'Document' }
+          },
+          // 2.2 检查申请
+          {
+            path: 'examination-request',
+            name: 'ExaminationRequest',
+            component: () =>
+              import(
+                '@/views/Outpatient/MedicalTreatment/ExaminationRequest/index.vue'
+              ),
+            meta: { title: '检查申请', icon: 'DocumentAdd' }
+          },
+          // 2.3 结果查看
+          {
+            path: 'result-view',
+            name: 'ResultView',
+            component: () =>
+              import(
+                '@/views/Outpatient/MedicalTreatment/ResultView/index.vue'
+              ),
+            meta: { title: '结果查看', icon: 'View' }
+          },
+          // 2.4 门诊确诊
+          {
+            path: 'diagnosis-confirm',
+            name: 'DiagnosisConfirm',
+            component: () =>
+              import(
+                '@/views/Outpatient/MedicalTreatment/DiagnosisConfirm/index.vue'
+              ),
+            meta: { title: '门诊确诊', icon: 'CircleCheck' }
+          },
+          // 2.5 开设处方
+          {
+            path: 'prescription',
+            name: 'Prescription',
+            component: () =>
+              import(
+                '@/views/Outpatient/MedicalTreatment/Prescription/index.vue'
+              ),
+            meta: { title: '开设处方', icon: 'EditPen' }
+          },
+          // 2.6 费用查询
+          {
+            path: 'fee-inquiry',
+            name: 'FeeInquiry',
+            component: () =>
+              import(
+                '@/views/Outpatient/MedicalTreatment/FeeInquiry/index.vue'
+              ),
+            meta: { title: '费用查询', icon: 'Money' }
+          }
+        ]
       }
     ]
   }

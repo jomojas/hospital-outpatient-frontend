@@ -1,6 +1,8 @@
 // ✅ 医生挂号患者信息
 export interface DoctorPatient {
   /** 患者姓名 */
+  registrationId: number
+  /** 患者姓名 */
   name: string
   /** 病历号 */
   medicalNo: string
@@ -123,9 +125,9 @@ export const STATUS_MAPPING: Record<
   // 待复诊：只有待复诊状态
   [BackendPatientStatus.WAITING_FOR_REVISIT]:
     FrontendPatientStatus.WAITING_REVISIT,
+  [BackendPatientStatus.REVISITED]: FrontendPatientStatus.WAITING_REVISIT,
 
   // 复诊结束：从已复诊开始的所有后续状态
-  [BackendPatientStatus.REVISITED]: FrontendPatientStatus.REVISIT_COMPLETED,
   [BackendPatientStatus.WAITING_FOR_PRESCRIPTION_PAYMENT]:
     FrontendPatientStatus.REVISIT_COMPLETED,
   [BackendPatientStatus.WAITING_FOR_MEDICINE]:
@@ -149,10 +151,10 @@ export const FRONTEND_STATUS_GROUPS = {
     BackendPatientStatus.CHECKING
   ],
   [FrontendPatientStatus.WAITING_REVISIT]: [
-    BackendPatientStatus.WAITING_FOR_REVISIT
+    BackendPatientStatus.WAITING_FOR_REVISIT,
+    BackendPatientStatus.REVISITED
   ],
   [FrontendPatientStatus.REVISIT_COMPLETED]: [
-    BackendPatientStatus.REVISITED,
     BackendPatientStatus.WAITING_FOR_PRESCRIPTION_PAYMENT,
     BackendPatientStatus.WAITING_FOR_MEDICINE,
     BackendPatientStatus.MEDICINE_TAKEN,
@@ -205,9 +207,23 @@ export function mapBackendStatusToFrontend(
   )
 }
 
-// ✅ 获取状态显示信息
+// ✅ 获取状态显示信息 (修改后)
 export function getStatusDisplayInfo(backendStatus: string) {
+  // 1. 先计算它属于哪个大分组 (为了保持Tab筛选功能正常)
   const frontendStatus = mapBackendStatusToFrontend(backendStatus)
+
+  // 2. 🔥 特殊拦截：如果是 REVISITED (已确诊/待开方)，给予特殊的显示样式
+  // 虽然它归类在"待复诊"分组，但我们希望视觉上把它区分出来
+  if (backendStatus === BackendPatientStatus.REVISITED) {
+    return {
+      frontendStatus, // 依然保持在 "待复诊" 分组
+      label: '已确诊 (待开方)', // 特殊文案
+      type: 'success', // 使用绿色或橙色，区别于普通待复诊的蓝色/红色
+      color: '#13ce66' // 自定义颜色 (例如 Element 的绿色，表示诊断已完成)
+    }
+  }
+
+  // 3. 通用逻辑：去配置表中查找默认的组样式
   const statusOption = FRONTEND_STATUS_OPTIONS.find(
     (option) => option.value === frontendStatus
   )

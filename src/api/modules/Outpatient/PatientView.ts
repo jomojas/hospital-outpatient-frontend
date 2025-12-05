@@ -51,9 +51,24 @@ export function getPatientDetailByMedicalNo(medicalNo: string) {
   })
 }
 
+/**
+ * ✅ 根据挂号ID获取对应的病案ID
+ * @param registrationId 挂号ID
+ * @returns 病案ID（如果病案存在）
+ */
+export function getCaseByRegistrationId(registrationId: number) {
+  return apiRequest<{
+    caseId: number | null
+  }>({
+    url: `/cases/registration/${registrationId}/record-id`,
+    method: 'GET'
+  })
+}
+
 // ✅ 导出常用的接口函数（主要接口）
 export {
   getDoctorRegisteredPatients as getPatients,
   getPatientDetailByMedicalNo as getPatientDetail,
-  getPatientStatusCount as getStatusCount
+  getPatientStatusCount as getStatusCount,
+  getCaseByRegistrationId as getCaseId
 }

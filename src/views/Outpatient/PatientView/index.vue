@@ -17,15 +17,9 @@ async function initializePage() {
   isInitializing.value = true
   initializationError.value = null
 
-  console.log('🚀 患者查看页面初始化...')
-
   try {
     // 获取患者列表（使用默认参数）
-    console.log('👥 获取患者列表...')
     await patientViewStore.fetchPatients()
-
-    console.log('✅ 患者查看页面初始化完成')
-    console.log('📊 当前统计:', patientViewStore.statistics)
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : '页面初始化失败'
@@ -48,12 +42,8 @@ onMounted(async () => {
 
 // ✅ 页面清理
 onUnmounted(() => {
-  console.log('🧹 患者查看页面清理...')
-
   // 清除错误信息
   patientViewStore.clearError()
-
-  console.log('✅ 患者查看页面清理完成')
 })
 </script>
 

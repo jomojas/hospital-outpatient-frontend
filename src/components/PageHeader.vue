@@ -6,6 +6,7 @@ import { ElMessage } from 'element-plus'
 import { logout, changePassword } from '@/api/modules/app'
 import { useRouter } from 'vue-router'
 import type { FormInstance } from 'element-plus'
+import { ArrowDown } from '@element-plus/icons-vue'
 
 const appStore = useAppStore()
 const { loginData } = storeToRefs(appStore)

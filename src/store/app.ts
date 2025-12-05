@@ -5,8 +5,10 @@ import type { LoginResponseData } from '@/api/modules/app'
 
 export const useAppStore = defineStore('app', () => {
   const currentMenu = ref<MenuItem | null>(null)
+
+  // ✅ 从 sessionStorage 初始化登录数据
   const loginData = ref<LoginResponseData | null>(
-    JSON.parse(localStorage.getItem('loginData') || 'null')
+    JSON.parse(sessionStorage.getItem('loginData') || 'null')
   )
 
   const setCurrentMenu = (menu: MenuItem) => {
@@ -14,9 +16,9 @@ export const useAppStore = defineStore('app', () => {
   }
 
   const setLoginData = (data: LoginResponseData) => {
-    // 数据持久化到 localStorage
-    localStorage.setItem('token', data.token)
-    localStorage.setItem('loginData', JSON.stringify(data))
+    // ✅ 数据持久化到 sessionStorage（标签页隔离）
+    sessionStorage.setItem('token', data.token)
+    sessionStorage.setItem('loginData', JSON.stringify(data))
     loginData.value = data
   }
 
@@ -24,18 +26,32 @@ export const useAppStore = defineStore('app', () => {
     // 清空 Pinia 中的登录信息
     loginData.value = null
     currentMenu.value = null
-    // 清理 localStorage
-    localStorage.removeItem('loginData')
-    localStorage.removeItem('token')
+
+    // ✅ 清理 sessionStorage（只影响当前标签页）
+    sessionStorage.removeItem('loginData')
+    sessionStorage.removeItem('token')
   }
 
   const changePassword = () => {
+    console.log('🔒 用户修改密码，清理当前标签页数据')
+
     // 清空 Pinia 中的登录信息
     loginData.value = null
     currentMenu.value = null
-    // 清理 localStorage
-    localStorage.removeItem('loginData')
-    localStorage.removeItem('token')
+
+    // ✅ 清理 sessionStorage（只影响当前标签页）
+    sessionStorage.removeItem('loginData')
+    sessionStorage.removeItem('token')
+  }
+
+  // ✅ 新增：获取当前用户 token
+  const getCurrentToken = (): string | null => {
+    return sessionStorage.getItem('token')
+  }
+
+  // ✅ 新增：检查登录状态
+  const isLoggedIn = (): boolean => {
+    return !!loginData.value && !!sessionStorage.getItem('token')
   }
 
   return {
@@ -44,6 +60,8 @@ export const useAppStore = defineStore('app', () => {
     loginData,
     setLoginData,
     logout,
-    changePassword
+    changePassword,
+    getCurrentToken,
+    isLoggedIn
   }
 })

@@ -131,16 +131,12 @@ export const usePatientViewStore = defineStore('patientView', () => {
 
   // ✅ 操作函数1：更新搜索参数
   function updateSearchParams(params: Partial<PatientQueryParams>) {
-    console.log('🔄 开始更新患者查询参数:', params)
-
     // 过滤掉 undefined 的值
     const filteredParams = Object.fromEntries(
       Object.entries(params).filter(
         ([_, value]) => value !== undefined && value !== null && value !== ''
       )
     ) as Partial<PatientQueryParams>
-
-    console.log('📋 过滤后的查询参数：', filteredParams)
 
     // ✅ 获取最终的 pageSize 值
     const finalPageSize =
@@ -155,8 +151,6 @@ export const usePatientViewStore = defineStore('patientView', () => {
       page: filteredParams.page ?? 1,
       pageSize: finalPageSize
     }
-
-    console.log('✅ 更新后的患者查询参数:', searchParams.value)
   }
 
   // ✅ 操作函数2：处理原始患者数据（状态转换）
@@ -207,7 +201,6 @@ export const usePatientViewStore = defineStore('patientView', () => {
   // ✅ 操作函数3：获取状态统计数据
   async function fetchStatusCount() {
     if (statusCountLoading.value) {
-      console.log('⏳ 正在加载统计数据中，跳过重复请求')
       return
     }
 
@@ -215,11 +208,9 @@ export const usePatientViewStore = defineStore('patientView', () => {
       statusCountLoading.value = true
       statusCountError.value = null
 
-      console.log('📊 获取患者状态统计数据...')
       const response = await getPatientStatusCount()
 
       statusCountData.value = response
-      console.log('✅ 患者状态统计获取成功:', statusCountData.value)
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : '获取统计数据失败'
@@ -228,7 +219,6 @@ export const usePatientViewStore = defineStore('patientView', () => {
       console.error('❌ 获取患者状态统计失败:', err)
 
       // 统计数据获取失败不显示错误提示，降级到页面数据计算
-      console.warn('⚠️ 统计数据获取失败，将使用当前页面数据计算')
     } finally {
       statusCountLoading.value = false
     }
@@ -237,15 +227,12 @@ export const usePatientViewStore = defineStore('patientView', () => {
   // ✅ 操作函数4：获取患者列表
   async function fetchPatients() {
     if (loading.value) {
-      console.log('⏳ 正在加载中，跳过重复请求')
       return
     }
 
     try {
       loading.value = true
       error.value = null
-
-      console.log('🔍 获取患者列表，参数:', searchParams.value)
 
       // 同时请求患者列表和统计数据
       const [patientsResponse] = await Promise.allSettled([
@@ -261,10 +248,6 @@ export const usePatientViewStore = defineStore('patientView', () => {
         patients.value = enhancedPatients
         paginationMeta.value =
           patientsResponse.value.meta || paginationMeta.value
-
-        console.log('✅ 患者列表获取成功:', patients.value.length, '条')
-        console.log('📊 分页信息:', paginationMeta.value)
-        console.log('📈 统计信息:', statistics.value)
       } else {
         throw new Error('获取患者列表失败')
       }
@@ -282,7 +265,6 @@ export const usePatientViewStore = defineStore('patientView', () => {
 
   // ✅ 操作函数5：搜索（接收所有查询参数）
   async function search(params: Partial<PatientQueryParams> = {}) {
-    console.log('🔍 执行患者搜索，参数:', params)
     updateSearchParams(params)
     await fetchPatients()
   }
@@ -291,8 +273,6 @@ export const usePatientViewStore = defineStore('patientView', () => {
   async function searchByFrontendStatus(
     frontendStatus: FrontendPatientStatusType | string
   ) {
-    console.log('🎯 按前端状态筛选患者:', frontendStatus)
-
     if (!frontendStatus || frontendStatus === '') {
       // 清除状态筛选，获取全部数据
       await search({ status: undefined })
@@ -306,7 +286,6 @@ export const usePatientViewStore = defineStore('patientView', () => {
   // ✅ 操作函数7：获取患者详情（修正版）
   async function fetchPatientDetail(medicalNo: string) {
     if (detailLoading.value) {
-      console.log('⏳ 正在加载患者详情中，跳过重复请求')
       return
     }
 
@@ -314,14 +293,11 @@ export const usePatientViewStore = defineStore('patientView', () => {
       detailLoading.value = true
       detailError.value = null
 
-      console.log('🔍 获取患者详情，病历号:', medicalNo)
       const response = await getPatientDetailByMedicalNo(medicalNo)
 
       // ✅ 对患者详情数据进行状态转换处理
       const enhancedPatientDetail = enhancePatientDetailData(response)
       patientDetail.value = enhancedPatientDetail
-
-      console.log('✅ 患者详情获取成功:', patientDetail.value)
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : '获取患者详情失败'
@@ -336,8 +312,6 @@ export const usePatientViewStore = defineStore('patientView', () => {
 
   // ✅ 操作函数8：打开患者详情弹窗
   async function openPatientDetail(medicalNo: string) {
-    console.log('👁️ 打开患者详情弹窗，病历号:', medicalNo)
-
     // 重置状态
     patientDetail.value = null
     detailError.value = null
@@ -351,7 +325,6 @@ export const usePatientViewStore = defineStore('patientView', () => {
 
   // ✅ 操作函数9：关闭患者详情弹窗
   function closePatientDetail() {
-    console.log('❌ 关闭患者详情弹窗')
     showDetailDialog.value = false
 
     // 可选：延迟清理数据，避免弹窗关闭动画时数据消失
@@ -363,27 +336,22 @@ export const usePatientViewStore = defineStore('patientView', () => {
 
   // ✅ 操作函数10：重置
   async function reset() {
-    console.log('🔄 重置患者查询')
     updateSearchParams({})
     await fetchPatients()
   }
 
   // ✅ 操作函数11：刷新
   async function refresh() {
-    console.log('🔄 刷新患者列表')
     await fetchPatients()
   }
 
   // ✅ 操作函数12：独立刷新统计数据
   async function refreshStatusCount() {
-    console.log('🔄 刷新患者状态统计数据')
     await fetchStatusCount()
   }
 
   // ✅ 操作函数13：切换页面
   async function changePage(page: number, pageSize?: number) {
-    console.log('📖 切换患者列表页面:', { page, pageSize })
-
     const newParams: Partial<PatientQueryParams> = { page }
     if (pageSize) {
       newParams.pageSize = pageSize
