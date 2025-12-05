@@ -283,6 +283,19 @@ export function getCaseFees(caseId: number) {
   })
 }
 
+// ✅ =================== 新增接口 ===================
+/**
+ * 结束诊疗（强制完成）
+ * 场景：确诊后无需开药，医生手动点击“结束接诊”，将状态从 REVISITED 改为 FINISHED
+ * @param registrationId 挂号ID
+ */
+export function finishVisit(registrationId: number) {
+  return apiRequest<void>({
+    url: `/cases/registrations/${registrationId}/finish`, // 建议后端提供此接口
+    method: 'POST'
+  })
+}
+
 /**
  * [工作台初始化] 获取诊疗上下文信息
  * @param registrationId 挂号ID (即路由中的 visitId)

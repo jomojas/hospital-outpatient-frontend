@@ -15,9 +15,13 @@ import {
   SwitchButton
 } from '@element-plus/icons-vue'
 
-// 1. 引入 Context Store
+// 1. 引入后端状态枚举
+import { BackendPatientStatus } from '@/types/Outpatient/PatientView'
+// 2. 引入 API 方法
+import { finishVisit } from '@/api/modules/Outpatient/MedicalTreatment'
+// 3. 引入 Context Store
 import { useClinicContextStore } from '@/store/Outpatient/MedicalTreatment/ClinicContext'
-// 2. 引入业务 Store (用于清理数据)
+// 4. 引入业务 Store (用于清理数据)
 import { useMedicalRecordStore } from '@/store/Outpatient/MedicalTreatment/MedicalRecord'
 // import { usePrescriptionStore } from '@/store/Outpatient/PrescriptionStore' // 后续创建后取消注释
 // import { useOrderStore } from '@/store/Outpatient/OrderStore' // 后续创建后取消注释
@@ -141,7 +145,7 @@ const goBack = () => {
 
 /**
  * 结束接诊 (彻底完成)
- * 逻辑：清除 SessionStorage 草稿 -> 跳转(清内存)
+ * 逻辑：判断状态 -> (可选)调用API结束 -> 清除 Storage 草稿 -> 跳转
  */
 const handleFinish = () => {
   ElMessageBox.confirm(
@@ -152,17 +156,33 @@ const handleFinish = () => {
       cancelButtonText: '取消',
       type: 'warning'
     }
-  ).then(() => {
-    // 1. 彻底清除该患者的所有草稿缓存
-    recordStore.clearDraft()
-    // prescriptionStore.clearDraft()
-    // orderStore.clearDraft()
+  ).then(async () => {
+    // ✅ 注意这里要加 async
+    try {
+      loading.value = true // 开启全屏 loading 防止误触
 
-    // 2. (可选) 调用 API 通知后端结束接诊
-    // await api.finishVisit(visitId.value)
+      // 1. ✅ 核心逻辑：如果是“已复诊”状态，说明无需开药，调用接口结束诊疗
+      if (contextStore.visitStatus === BackendPatientStatus.REVISITED) {
+        await finishVisit(visitId.value)
+        ElMessage.success('诊疗已完成，状态已更新')
+      } else {
+        // 如果是其他状态（如待复诊），可能只是暂时退出，提示一下即可
+        ElMessage.success('已退出接诊')
+      }
 
-    ElMessage.success('接诊已结束')
-    router.push('/outpatient/patient-view')
+      // 2. 彻底清除该患者的所有草稿缓存
+      recordStore.clearDraft()
+      // prescriptionStore.clearDraft()
+      // orderStore.clearDraft()
+
+      // 3. 跳转回列表
+      router.push('/outpatient/patient-view')
+    } catch (error) {
+      console.error(error)
+      ElMessage.error('操作失败，请重试')
+    } finally {
+      loading.value = false
+    }
   })
 }
 </script>

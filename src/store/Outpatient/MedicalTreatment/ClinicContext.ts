@@ -44,12 +44,12 @@ export const useClinicContextStore = defineStore('clinicContext', () => {
 
     if (s === B.WAITING_FOR_CONSULTATION) return UI_STATUS.PENDING
 
-    if (s === B.WAITING_FOR_REVISIT) return UI_STATUS.REVISIT
+    if (([B.WAITING_FOR_PROJECT_PAYMENT, B.REVISITED] as string[]).includes(s))
+      return UI_STATUS.REVISIT
 
     if (
       (
         [
-          B.REVISITED,
           B.WAITING_FOR_PRESCRIPTION_PAYMENT,
           B.WAITING_FOR_MEDICINE,
           B.MEDICINE_TAKEN,
