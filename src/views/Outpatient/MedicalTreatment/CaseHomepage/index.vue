@@ -14,6 +14,9 @@ import CaseForm from './components/CaseForm.vue'
 const contextStore = useClinicContextStore()
 const recordStore = useMedicalRecordStore()
 
+// 引入 contextStore
+const isEditable = computed(() => contextStore.isMedicalRecordEditable)
+
 // 组件引用
 const caseFormRef = ref<InstanceType<typeof CaseForm>>()
 
@@ -138,8 +141,8 @@ const handleUpdate = async () => {
     class="case-homepage"
     v-loading="recordStore.isLoading || contextStore.loading"
   >
-    <!-- 顶部操作栏 -->
-    <div class="action-bar">
+    <!-- 1.顶部操作栏 -->
+    <div class="action-bar" v-if="isEditable">
       <div class="tips">
         <el-alert
           v-if="!hasCaseId"
@@ -182,10 +185,23 @@ const handleUpdate = async () => {
       </div>
     </div>
 
-    <!-- 表单区域 -->
+    <!-- 2. 只读提示 (可选) -->
+    <div v-else class="readonly-banner">
+      <el-alert
+        title="病案已归档，当前为只读模式"
+        type="info"
+        :closable="false"
+        show-icon
+      />
+    </div>
+
+    <!-- 3. 表单区域 -->
     <div class="content-area">
-      <!-- 只有当 Context 加载完后才渲染表单，避免数据错乱 -->
-      <CaseForm v-if="contextStore.registrationId" ref="caseFormRef" />
+      <!-- 传一个 prop 给子组件，或者在子组件里判断 store -->
+      <!-- 这里建议利用 CSS pointer-events 或者 fieldset disabled 快速禁用 -->
+      <fieldset :disabled="!isEditable" class="form-fieldset">
+        <CaseForm ref="caseFormRef" />
+      </fieldset>
     </div>
   </div>
 </template>
@@ -219,5 +235,15 @@ const handleUpdate = async () => {
   flex: 1;
   overflow-y: auto;
   padding-bottom: 40px;
+}
+
+/* 简单的禁用样式 */
+.form-fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+.readonly-banner {
+  margin-bottom: 20px;
 }
 </style>

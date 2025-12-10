@@ -9,6 +9,8 @@ import type {
   MedicalItemResponse, // ✅ 单个医疗项目分页响应
   AllMedicalItemsResponse, // ✅ 新增：批量获取的组合响应
   ApplyMedicalItemsRequest,
+  CaseItemHistory,
+  ApplyStatus,
 
   // 第3页：检查结果查看
   ExaminationResult,
@@ -21,6 +23,7 @@ import type {
   // DrugInfo,
   DrugListResponse,
   CreatePrescriptionRequest,
+  PrescriptionHistory,
 
   // 第6页：费用查询
   FeeInquiryResponse,
@@ -180,6 +183,30 @@ export function applyMedicalItems(
   })
 }
 
+/**
+ * 获取病案下的所有已申请项目 (历史记录)
+ * 包括待缴费、已缴费、已退费、已撤销的所有记录
+ * @param caseId 病案ID
+ */
+export function getCaseItemsHistory(caseId: number) {
+  return apiRequest<CaseItemHistory[]>({
+    url: `/cases/${caseId}/items`,
+    method: 'GET'
+  })
+}
+
+/**
+ * 撤销/作废待缴费的项目
+ * 仅限状态为 PENDING_PAYMENT 的项目
+ * @param applyId 申请记录ID (注意是 applyId 不是 itemId)
+ */
+export function revokeMedicalItem(applyId: number) {
+  return apiRequest<void>({
+    url: `/cases/applies/${applyId}/revoke`, // 建议路径，具体看后端定义
+    method: 'POST'
+  })
+}
+
 // ✅ =================== 第3页：检查结果查看接口 ===================
 
 /**
@@ -266,6 +293,26 @@ export function createPrescriptions(
     url: `/cases/${caseId}/prescriptions`,
     method: 'POST',
     data: request
+  })
+}
+
+/**
+ * 获取该病案下的所有处方记录
+ */
+export function getCasePrescriptions(caseId: number) {
+  return apiRequest<PrescriptionHistory[]>({
+    url: `/cases/${caseId}/prescriptions`,
+    method: 'GET'
+  })
+}
+
+/**
+ * 撤销/作废待缴费的处方明细
+ */
+export function revokePrescription(prescriptionId: number) {
+  return apiRequest<void>({
+    url: `/cases/prescriptions/${prescriptionId}/revoke`,
+    method: 'POST'
   })
 }
 
@@ -385,6 +432,8 @@ export {
   // 医疗项目
   applyMedicalItems as submitApplies,
   getCaseResults as getResults,
+  getCaseItemsHistory as getHistoryItems,
+  revokeMedicalItem as revokeItem,
 
   // 处方管理
   createPrescriptions as submitPrescriptions,

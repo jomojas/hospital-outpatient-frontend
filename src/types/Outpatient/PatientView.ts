@@ -76,10 +76,10 @@ export const BackendPatientStatus = {
   WAITING_FOR_PRESCRIPTION_PAYMENT: 'WAITING_FOR_PRESCRIPTION_PAYMENT',
   /** 待取药 */
   WAITING_FOR_MEDICINE: 'WAITING_FOR_MEDICINE',
-  /** 已取药 */
-  MEDICINE_TAKEN: 'MEDICINE_TAKEN',
-  /** 已退药 */
-  MEDICINE_RETURNED: 'MEDICINE_RETURNED',
+  // /** 已取药 */
+  // MEDICINE_TAKEN: 'MEDICINE_TAKEN',
+  // /** 已退药 */
+  // MEDICINE_RETURNED: 'MEDICINE_RETURNED',
   /** 诊疗结束 */
   FINISHED: 'FINISHED'
 } as const
@@ -132,10 +132,10 @@ export const STATUS_MAPPING: Record<
     FrontendPatientStatus.REVISIT_COMPLETED,
   [BackendPatientStatus.WAITING_FOR_MEDICINE]:
     FrontendPatientStatus.REVISIT_COMPLETED,
-  [BackendPatientStatus.MEDICINE_TAKEN]:
-    FrontendPatientStatus.REVISIT_COMPLETED,
-  [BackendPatientStatus.MEDICINE_RETURNED]:
-    FrontendPatientStatus.REVISIT_COMPLETED,
+  // [BackendPatientStatus.MEDICINE_TAKEN]:
+  //   FrontendPatientStatus.REVISIT_COMPLETED,
+  // [BackendPatientStatus.MEDICINE_RETURNED]:
+  //   FrontendPatientStatus.REVISIT_COMPLETED,
   [BackendPatientStatus.FINISHED]: FrontendPatientStatus.REVISIT_COMPLETED
 }
 
@@ -157,8 +157,8 @@ export const FRONTEND_STATUS_GROUPS = {
   [FrontendPatientStatus.REVISIT_COMPLETED]: [
     BackendPatientStatus.WAITING_FOR_PRESCRIPTION_PAYMENT,
     BackendPatientStatus.WAITING_FOR_MEDICINE,
-    BackendPatientStatus.MEDICINE_TAKEN,
-    BackendPatientStatus.MEDICINE_RETURNED,
+    // BackendPatientStatus.MEDICINE_TAKEN,
+    // BackendPatientStatus.MEDICINE_RETURNED,
     BackendPatientStatus.FINISHED
   ]
 } as const

@@ -15,8 +15,9 @@ export const ApplyStatus = {
   PENDING_PAYMENT: 'PENDING_PAYMENT', // 待缴费
   UNFINISHED: 'UNFINISHED', // 待完成/待发药
   FINISHED: 'FINISHED', // 已完成/已发药
-  RETURNED: 'RETURNED', // 已退回/撤销
-  CANCELLED: 'CANCELLED' // 已退费/作废
+  RETURNED: 'RETURNED', // 已退回/撤销 (退费)
+  CANCELLED: 'CANCELLED', // 已退费/作废 (退费)
+  REVOKED: 'REVOKED' // ✅ 新增：已撤销 (医生主动撤销，不涉及退费)
 } as const
 
 /** 申请状态类型定义 */
@@ -174,35 +175,37 @@ export interface ApplyMedicalItemsRequest {
   items: ApplyItem[]
 }
 
+/** 历史项目详情 (包含状态) */
+export interface CaseItemHistory {
+  itemId: number
+  itemName: string
+  itemCode: string
+  itemType: ApplyType
+  status: ApplyStatus
+  price: string
+  unit: number
+  createTime: string
+  applyId: number // 申请记录的主键ID，用于撤销操作
+}
+
 // ✅ =================== 第3页：检查结果查看 ===================
 
 /** 检查结果详情 */
 export interface ExaminationResult {
-  /** 申请ID */
   applyId: number
-  /** 医疗项目ID */
   itemId: number
-  /** 申请类型 */
+  itemName: string // ✅ 必加
   applyType: ApplyType
-  /** 申请目的 */
   applyPurpose: string
-  /** 申请部位 */
   applySite: string
-  /** 申请时间 */
   applyTime: string
-  /** 执行人ID */
   performerId?: number
-  /** 结果记录人ID */
+  performerName?: string // ✅ 建议加
   resultRecorderId?: number
-  /** 执行时间 */
   performTime?: string
-  /** 检查结果 */
   result?: string
-  /** 申请状态 */
   status: ApplyStatus
-  /** 单位 */
   unit: number
-  /** 备注 */
   remark?: string
 }
 
@@ -301,42 +304,59 @@ export interface CreatePrescriptionRequest {
   prescriptions: PrescriptionItem[]
 }
 
+/** 处方历史详情 */
+export interface PrescriptionHistory {
+  prescriptionId: number // 处方主键 (类似 applyId)
+  drugId: number
+  drugName: string
+  drugCode: string // 建议加
+  specification: string // 规格 (必加，医生要看是0.5g还是0.25g)
+  unit: string
+  price: string
+  usage: string // 对应提交时的 dosage
+  quantity: number
+  status: ApplyStatus // UNFINISHED, FINISHED, RETURNED, REVOKED
+  createTime: string
+}
+
 // ✅ =================== 第6页：费用查询 ===================
+
+// 1. 修改枚举类型，增加 'REVOKED'
+export type FeeStatus = 'UNPAID' | 'PAID' | 'REFUNDED' | 'REVOKED'
 
 /** 医疗项目费用详情 */
 export interface ItemFeeDTO {
-  /** 项目名称 */
+  itemId: number
   itemName: string
-  /** 单价 */
   price: string
-  /** 数量 */
   unit: number
-  /** 总价 */
   amount: string
+  // ✅ 新增：非常重要
+  status: FeeStatus
+  createTime: string // 开立时间
 }
 
 /** 药品费用详情 */
 export interface DrugFeeDTO {
-  /** 药品名称 */
+  drugId: number
   drugName: string
-  /** 单价 */
+  // ✅ 新增：药品规格很重要
+  specification: string
   price: string
-  /** 数量 */
   quantity: number
-  /** 总价 */
   amount: string
+  // ✅ 新增
+  status: FeeStatus
+  createTime: string
 }
 
 /** 费用查询响应 */
 export interface FeeInquiryResponse {
-  /** 挂号费 */
   registrationFee: string
-  /** 医疗项目费用列表 */
   medicalItemFees: ItemFeeDTO[]
-  /** 处方药品费用列表 */
   prescriptionFees: DrugFeeDTO[]
-  /** 总费用 */
-  total: string
+  totalAmount: string // 建议统一叫 totalAmount
+  unpaidAmount: string // ✅ 新增：建议后端计算好待缴金额，方便前端高亮展示
 }
 
 // ✅ =================== Pinia Store 用到的复合类型 ===================
@@ -426,10 +446,11 @@ export const ApplyTypeLabels: Record<ApplyType, string> = {
 /** 申请状态中文映射 */
 export const ApplyStatusLabels: Record<ApplyStatus, string> = {
   [ApplyStatus.PENDING_PAYMENT]: '待缴费',
-  [ApplyStatus.UNFINISHED]: '待完成/待发药',
-  [ApplyStatus.FINISHED]: '已完成/已发药',
-  [ApplyStatus.RETURNED]: '已退回/撤销',
-  [ApplyStatus.CANCELLED]: '已退费/作废'
+  [ApplyStatus.UNFINISHED]: '待完成',
+  [ApplyStatus.FINISHED]: '已完成',
+  [ApplyStatus.RETURNED]: '已退药',
+  [ApplyStatus.CANCELLED]: '已退费',
+  [ApplyStatus.REVOKED]: '已撤销' // ✅ 新增
 }
 
 /** 药品单位中文映射 */

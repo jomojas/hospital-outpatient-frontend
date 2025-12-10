@@ -24,7 +24,7 @@ import { useClinicContextStore } from '@/store/Outpatient/MedicalTreatment/Clini
 // 4. 引入业务 Store (用于清理数据)
 import { useMedicalRecordStore } from '@/store/Outpatient/MedicalTreatment/MedicalRecord'
 // import { usePrescriptionStore } from '@/store/Outpatient/PrescriptionStore' // 后续创建后取消注释
-// import { useOrderStore } from '@/store/Outpatient/OrderStore' // 后续创建后取消注释
+import { useOrderStore } from '@/store/Outpatient/MedicalTreatment/OrderStore' // 后续创建后取消注释
 
 const route = useRoute()
 const router = useRouter()
@@ -33,7 +33,7 @@ const router = useRouter()
 const contextStore = useClinicContextStore()
 const recordStore = useMedicalRecordStore()
 // const prescriptionStore = usePrescriptionStore()
-// const orderStore = useOrderStore()
+const orderStore = useOrderStore()
 
 const visitId = computed(() => Number(route.params.visitId))
 const currentRouteName = computed(() => route.name)
@@ -173,7 +173,7 @@ const handleFinish = () => {
       // 2. 彻底清除该患者的所有草稿缓存
       recordStore.clearDraft()
       // prescriptionStore.clearDraft()
-      // orderStore.clearDraft()
+      orderStore.clearDraft()
 
       // 3. 跳转回列表
       router.push('/outpatient/patient-view')

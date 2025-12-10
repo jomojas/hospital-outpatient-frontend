@@ -52,8 +52,8 @@ export const useClinicContextStore = defineStore('clinicContext', () => {
         [
           B.WAITING_FOR_PRESCRIPTION_PAYMENT,
           B.WAITING_FOR_MEDICINE,
-          B.MEDICINE_TAKEN,
-          B.MEDICINE_RETURNED,
+          // B.MEDICINE_TAKEN,
+          // B.MEDICINE_RETURNED,
           B.FINISHED
         ] as string[]
       ).includes(s)
@@ -77,6 +77,38 @@ export const useClinicContextStore = defineStore('clinicContext', () => {
     return UI_STATUS.UNKNOWN
   })
 
+  // 1. [原有] 是否可以开检查项目
+  const canRequestItems = computed(() => {
+    // 逻辑：只有在 确诊之前 (REVISITED 之前) 可以开检查
+    const s = visitStatus.value
+    const B = BackendPatientStatus
+    return (
+      [
+        B.WAITING_FOR_CONSULTATION,
+        B.INITIAL_CONSULTATION_DONE,
+        B.WAITING_FOR_PROJECT_PAYMENT,
+        B.WAITING_FOR_CHECKUP,
+        B.CHECKING,
+        B.WAITING_FOR_REVISIT
+      ] as string[]
+    ).includes(s)
+  })
+
+  // 2. ✅ [新增] 病历文书是否可编辑
+  // 用于：病案首页(Page1)、门诊确诊(Page4)
+  // 逻辑：同上，只有在确诊之前可以改病历。一旦确诊(REVISITED)，病历就封存了。
+  const isMedicalRecordEditable = computed(() => {
+    return canRequestItems.value // 逻辑其实和开检查是一样的
+  })
+
+  // 3. ✅ [新增] 是否可以开处方
+  // 用于：开设处方(Page5)
+  // 逻辑：只有在 "已复诊(REVISITED)" 状态下可以开药
+  // (注：如果是 FINISHED，也不能开药了)
+  const canPrescribe = computed(() => {
+    return visitStatus.value === BackendPatientStatus.REVISITED
+  })
+
   /**
    * 菜单访问权限控制
    */
@@ -93,8 +125,8 @@ export const useClinicContextStore = defineStore('clinicContext', () => {
         B.REVISITED,
         B.WAITING_FOR_PRESCRIPTION_PAYMENT,
         B.WAITING_FOR_MEDICINE,
-        B.MEDICINE_TAKEN,
-        B.MEDICINE_RETURNED,
+        // B.MEDICINE_TAKEN,
+        // B.MEDICINE_RETURNED,
         B.FINISHED
       ] as string[]
     ).includes(status)
@@ -171,6 +203,9 @@ export const useClinicContextStore = defineStore('clinicContext', () => {
     caseId,
     visitStatus,
     patientInfo,
+    canRequestItems,
+    isMedicalRecordEditable,
+    canPrescribe,
     menuPermissions,
     visitStatusInfo,
     initContext,
