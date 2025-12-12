@@ -1,13 +1,16 @@
 import { createRouter, createWebHistory, RouterView } from 'vue-router'
-import MainLayout from '@/components/MainLayout.vue'
-// import PageHeader from '@/components/PageHeader.vue'
 
+import MainLayout from '@/components/MainLayout.vue'
 // 引入新布局
 import SimpleHeaderLayout from '@/components/SimpleHeaderLayout.vue'
 import DoctorWorkspaceLayout from '@/components/DoctorWorkspaceLayout.vue'
 
+// 2. 医技通用组件 (复用策略)
+const TechEntry = () => import('@/views/Tech/Entry/index.vue')
+const TechRecord = () => import('@/views/Tech/Record/index.vue')
+
 const routes = [
-  // ✅ 根路径重定向到登录页
+  // ... 登录页保持不变 ...
   {
     path: '/',
     redirect: '/login'
@@ -22,7 +25,8 @@ const routes = [
       requiresAuth: false
     }
   },
-  // ✅ 挂号科室路由配置（添加meta信息）
+
+  // ... 挂号科室保持不变 ...
   {
     path: '/registration',
     component: MainLayout,
@@ -32,6 +36,7 @@ const routes = [
       requiresAuth: true
     },
     children: [
+      // ... (原有的挂号子路由) ...
       {
         path: '',
         redirect: '/registration/register'
@@ -88,10 +93,11 @@ const routes = [
       }
     ]
   },
-  // ✅ 门诊医生路由配置 (修改部分)
+
+  // ... 门诊医生保持不变 ...
   {
     path: '/outpatient',
-    component: RouterView,
+    component: RouterView, // 这里用 RouterView 或自定义 Wrapper
     meta: {
       title: '门诊医生',
       icon: 'Stethoscope',
@@ -99,6 +105,7 @@ const routes = [
     },
     redirect: '/outpatient/patient-view',
     children: [
+      // ... (原有的门诊子路由) ...
       // 1. 患者查看 (使用 SimpleHeaderLayout)
       {
         path: 'patient-view',
@@ -184,32 +191,90 @@ const routes = [
         ]
       }
     ]
+  },
+
+  // 1. 检查科室 (Exam)
+  {
+    path: '/exam',
+    component: MainLayout,
+    meta: { title: '检查工作站', requiresAuth: true },
+    children: [
+      // ✅ 新增：默认重定向到录入页
+      {
+        path: '',
+        redirect: '/exam/entry'
+      },
+      {
+        path: 'entry',
+        name: 'ExamEntry',
+        component: TechEntry,
+        meta: { title: '检查录入', moduleType: 'EXAM' } // ✅ 标记
+      },
+      {
+        path: 'record',
+        name: 'ExamRecord',
+        component: TechRecord,
+        meta: { title: '检查记录', moduleType: 'EXAM' }
+      }
+    ]
+  },
+
+  // 2. 检验科室 (Lab)
+  {
+    path: '/lab',
+    component: MainLayout,
+    meta: { title: '检验工作站', requiresAuth: true },
+    children: [
+      // ✅ 新增：默认重定向到录入页
+      {
+        path: '',
+        redirect: '/lab/entry'
+      },
+      {
+        path: 'entry',
+        name: 'LabEntry',
+        component: TechEntry,
+        meta: { title: '检验录入', moduleType: 'LAB' } // ✅ 标记
+      },
+      {
+        path: 'record',
+        name: 'LabRecord',
+        component: TechRecord,
+        meta: { title: '检验记录', moduleType: 'LAB' }
+      }
+    ]
+  },
+
+  // 3. 处置室 (Disposal)
+  {
+    path: '/disposal',
+    component: MainLayout,
+    meta: { title: '处置工作站', requiresAuth: true },
+    children: [
+      // ✅ 新增：默认重定向到录入页
+      {
+        path: '',
+        redirect: '/disposal/entry'
+      },
+      {
+        path: 'entry',
+        name: 'DisposalEntry',
+        component: TechEntry,
+        meta: { title: '处置录入', moduleType: 'DISPOSAL' } // ✅ 标记
+      },
+      {
+        path: 'record',
+        name: 'DisposalRecord',
+        component: TechRecord,
+        meta: { title: '处置记录', moduleType: 'DISPOSAL' }
+      }
+    ]
   }
-  // 其他科室和页面路由...
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
 })
-
-// 全局前置守卫
-// router.beforeEach((to, from, next) => {
-//   const token = localStorage.getItem('token')
-//   if (to.meta.requiresAuth) {
-//     if (token) {
-//       next()
-//     } else {
-//       next({ path: '/login' })
-//     }
-//   } else {
-//     // 已登录访问登录页时自动跳转到首页
-//     if (to.path === '/login' && token) {
-//       next({ path: '/dashboard' })
-//     } else {
-//       next()
-//     }
-//   }
-// })
 
 export default router

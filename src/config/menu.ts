@@ -9,6 +9,7 @@ export interface MenuItem {
 
 // 不同科室的菜单配置
 export const departmentMenus: Record<string, MenuItem[]> = {
+  // 1. 挂号收费科室
   REGISTRATION: [
     {
       path: '/registration/register',
@@ -42,6 +43,56 @@ export const departmentMenus: Record<string, MenuItem[]> = {
     }
   ],
 
-  // ✅ 门诊医生菜单配置
-  OUTPATIENT: []
+  // 2. 门诊医生 (保持为空)
+  // 原因：医生使用 SimpleHeaderLayout 和 DoctorWorkspaceLayout，
+  // 也就是"大厅"和"诊室"模式，不依赖全局左侧导航栏。
+  OUTPATIENT: [],
+
+  // 3. 检查科室 (Exam)
+  EXAM: [
+    {
+      path: '/exam/entry',
+      name: 'ExamEntry',
+      label: '检查录入',
+      icon: 'Edit'
+    },
+    {
+      path: '/exam/record',
+      name: 'ExamRecord',
+      label: '检查记录',
+      icon: 'Clock'
+    }
+  ],
+
+  // 4. 检验科室 (Lab)
+  LAB: [
+    {
+      path: '/lab/entry',
+      name: 'LabEntry',
+      label: '检验录入',
+      icon: 'Edit'
+    },
+    {
+      path: '/lab/record',
+      name: 'LabRecord',
+      label: '检验记录',
+      icon: 'Clock'
+    }
+  ],
+
+  // 5. 处置科室 (Disposal)
+  DISPOSAL: [
+    {
+      path: '/disposal/entry',
+      name: 'DisposalEntry',
+      label: '处置录入',
+      icon: 'Edit'
+    },
+    {
+      path: '/disposal/record',
+      name: 'DisposalRecord',
+      label: '处置记录',
+      icon: 'Clock'
+    }
+  ]
 }
