@@ -1,4 +1,3 @@
-<!-- filepath: c:\Users\Jomo\Desktop\HospitalOutpatient\Hospital-Outpatient\src\views\Outpatient\PatientView\components\PatientSearchForm.vue -->
 <script setup lang="ts">
 import { reactive } from 'vue'
 import {

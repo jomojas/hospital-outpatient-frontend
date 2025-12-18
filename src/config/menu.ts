@@ -94,5 +94,21 @@ export const departmentMenus: Record<string, MenuItem[]> = {
       label: '处置记录',
       icon: 'Clock'
     }
+  ],
+
+  // ✅ [新增] 药房管理员菜单配置
+  PHARMACY: [
+    {
+      path: '/pharmacy/dispense',
+      name: 'PharmacyDispense',
+      label: '发药处理',
+      icon: 'Box' // 使用 Box 图标代表药品/盒子
+    },
+    {
+      path: '/pharmacy/record',
+      name: 'PharmacyRecord',
+      label: '发药记录',
+      icon: 'Clock'
+    }
   ]
 }

@@ -269,6 +269,40 @@ const routes = [
         meta: { title: '处置记录', moduleType: 'DISPOSAL' }
       }
     ]
+  },
+
+  // ✅ [新增] 门诊药房路由配置
+  {
+    path: '/pharmacy',
+    component: MainLayout,
+    meta: {
+      title: '门诊药房',
+      icon: 'FirstAidKit', // 使用急救包图标代表药房
+      requiresAuth: true
+    },
+    redirect: '/pharmacy/dispense',
+    children: [
+      {
+        path: 'dispense',
+        name: 'PharmacyDispense',
+        component: () => import('@/views/Pharmacy/Dispense/index.vue'),
+        meta: {
+          title: '发药处理',
+          icon: 'Box',
+          requiresAuth: true
+        }
+      },
+      {
+        path: 'record',
+        name: 'PharmacyRecord',
+        component: () => import('@/views/Pharmacy/Record/index.vue'),
+        meta: {
+          title: '发药记录',
+          icon: 'Clock',
+          requiresAuth: true
+        }
+      }
+    ]
   }
 ]
 
