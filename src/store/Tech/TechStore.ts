@@ -13,8 +13,7 @@ import {
   type TechApplyQueryParams,
   type SubmitResultRequest,
   type TechRecordItem,
-  type TechRecordQueryParams,
-  TechApplyStatus
+  type TechRecordQueryParams
 } from '@/types/Tech/TechStation'
 
 export type TechModuleType = 'EXAM' | 'LAB' | 'DISPOSAL'

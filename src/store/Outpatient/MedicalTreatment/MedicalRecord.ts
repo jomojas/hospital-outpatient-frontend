@@ -11,7 +11,6 @@ import {
 
 import type {
   CreateMedicalCaseRequest,
-  UpdateMedicalCaseRequest,
   MedicalCaseDetail
 } from '@/types/Outpatient/MedicalTreatment'
 

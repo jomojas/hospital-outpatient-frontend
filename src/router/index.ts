@@ -9,6 +9,22 @@ import DoctorWorkspaceLayout from '@/components/DoctorWorkspaceLayout.vue'
 const TechEntry = () => import('@/views/Tech/Entry/index.vue')
 const TechRecord = () => import('@/views/Tech/Record/index.vue')
 
+// Information 管理端页面（按路由懒加载）
+const InformationOverview = () =>
+  import('@/views/Information/Overview/index.vue')
+const InformationDepartments = () =>
+  import('@/views/Information/Base/Departments/index.vue')
+const InformationEmployees = () =>
+  import('@/views/Information/Base/Employees/index.vue')
+const InformationRegistrationLevels = () =>
+  import('@/views/Information/Base/RegistrationLevels/index.vue')
+const InformationDoctorSchedule = () =>
+  import('@/views/Information/Schedule/Doctor/index.vue')
+const InformationDrugCatalog = () =>
+  import('@/views/Information/Catalog/Drugs/index.vue')
+const InformationMedicalItems = () =>
+  import('@/views/Information/Catalog/Items/index.vue')
+
 const routes = [
   // ... 登录页保持不变 ...
   {
@@ -301,6 +317,62 @@ const routes = [
           icon: 'Clock',
           requiresAuth: true
         }
+      }
+    ]
+  },
+
+  // ✅ [新增] 信息科/管理员（Information）路由配置
+  {
+    path: '/information',
+    component: MainLayout,
+    meta: {
+      title: '信息管理',
+      icon: 'Setting',
+      requiresAuth: true
+    },
+    redirect: '/information/overview',
+    children: [
+      {
+        path: 'overview',
+        name: 'InformationOverview',
+        component: InformationOverview,
+        meta: { title: '首页概览', icon: 'DataAnalysis', requiresAuth: true }
+      },
+      {
+        path: 'base/departments',
+        name: 'InformationDepartments',
+        component: InformationDepartments,
+        meta: { title: '科室管理', icon: 'OfficeBuilding', requiresAuth: true }
+      },
+      {
+        path: 'base/employees',
+        name: 'InformationEmployees',
+        component: InformationEmployees,
+        meta: { title: '员工管理', icon: 'UserFilled', requiresAuth: true }
+      },
+      {
+        path: 'base/registration-levels',
+        name: 'InformationRegistrationLevels',
+        component: InformationRegistrationLevels,
+        meta: { title: '挂号级别管理', icon: 'Tickets', requiresAuth: true }
+      },
+      {
+        path: 'schedule/doctor',
+        name: 'InformationDoctorSchedule',
+        component: InformationDoctorSchedule,
+        meta: { title: '医生排班设置', icon: 'Date', requiresAuth: true }
+      },
+      {
+        path: 'catalog/drugs',
+        name: 'InformationDrugCatalog',
+        component: InformationDrugCatalog,
+        meta: { title: '药品目录', icon: 'Box', requiresAuth: true }
+      },
+      {
+        path: 'catalog/items',
+        name: 'InformationMedicalItems',
+        component: InformationMedicalItems,
+        meta: { title: '医疗项目', icon: 'List', requiresAuth: true }
       }
     ]
   }

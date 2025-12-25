@@ -13,8 +13,7 @@ import {
 import {
   type MedicalItem,
   type SelectedApplyItem,
-  type CaseItemHistory,
-  ApplyType // 引入申请类型常量
+  type CaseItemHistory
 } from '@/types/Outpatient/MedicalTreatment'
 
 import { useClinicContextStore } from '@/store/Outpatient/MedicalTreatment/ClinicContext'

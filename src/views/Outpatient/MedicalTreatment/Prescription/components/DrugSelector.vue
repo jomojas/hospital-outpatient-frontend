@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, reactive, nextTick, computed } from 'vue'
-import { Search } from '@element-plus/icons-vue'
 import { ElTable } from 'element-plus'
 import { usePrescriptionStore } from '@/store/Outpatient/MedicalTreatment/PrescriptionStore'
 import { getDrugs } from '@/api/modules/Outpatient/MedicalTreatment'

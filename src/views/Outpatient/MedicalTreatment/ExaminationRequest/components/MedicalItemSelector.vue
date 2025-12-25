@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, watch, nextTick, computed } from 'vue'
-import { Search } from '@element-plus/icons-vue'
+import { ref, reactive, nextTick, computed } from 'vue'
 import { ElTable } from 'element-plus'
 import { useOrderStore } from '@/store/Outpatient/MedicalTreatment/OrderStore'
 import {

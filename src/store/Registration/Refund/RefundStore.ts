@@ -207,7 +207,7 @@ export const useRefundStore = defineStore('refund', () => {
       loading.value = true
 
       // ✅ 调用退号 API
-      const response = await cancelRegistrationAPI(registrationId)
+      await cancelRegistrationAPI(registrationId)
 
       ElMessage.success('退号成功')
 

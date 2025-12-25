@@ -10,7 +10,6 @@ import type {
   AllMedicalItemsResponse, // ✅ 新增：批量获取的组合响应
   ApplyMedicalItemsRequest,
   CaseItemHistory,
-  ApplyStatus,
 
   // 第3页：检查结果查看
   ExaminationResult,

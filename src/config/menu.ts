@@ -110,5 +110,75 @@ export const departmentMenus: Record<string, MenuItem[]> = {
       label: '发药记录',
       icon: 'Clock'
     }
+  ],
+
+  // ✅ [新增] 信息科/管理员（Information）菜单配置
+  INFORMATION: [
+    {
+      path: '/information/overview',
+      name: 'InformationOverview',
+      label: '首页概览',
+      icon: 'DataAnalysis'
+    },
+    {
+      path: '/information/base',
+      name: 'InformationBase',
+      label: '基础信息管理',
+      icon: 'Setting',
+      children: [
+        {
+          path: '/information/base/departments',
+          name: 'InformationDepartments',
+          label: '科室管理',
+          icon: 'OfficeBuilding'
+        },
+        {
+          path: '/information/base/employees',
+          name: 'InformationEmployees',
+          label: '员工管理',
+          icon: 'UserFilled'
+        },
+        {
+          path: '/information/base/registration-levels',
+          name: 'InformationRegistrationLevels',
+          label: '挂号级别管理',
+          icon: 'Tickets'
+        }
+      ]
+    },
+    {
+      path: '/information/schedule',
+      name: 'InformationSchedule',
+      label: '排班管理',
+      icon: 'Calendar',
+      children: [
+        {
+          path: '/information/schedule/doctor',
+          name: 'InformationDoctorSchedule',
+          label: '医生排班设置',
+          icon: 'Date'
+        }
+      ]
+    },
+    {
+      path: '/information/catalog',
+      name: 'InformationCatalog',
+      label: '医疗项目管理',
+      icon: 'Collection',
+      children: [
+        {
+          path: '/information/catalog/drugs',
+          name: 'InformationDrugCatalog',
+          label: '药品目录',
+          icon: 'Box'
+        },
+        {
+          path: '/information/catalog/items',
+          name: 'InformationMedicalItems',
+          label: '医疗项目',
+          icon: 'List'
+        }
+      ]
+    }
   ]
 }
