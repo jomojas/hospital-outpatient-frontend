@@ -1,4 +1,10 @@
 import { createRouter, createWebHistory, RouterView } from 'vue-router'
+import { useAppStore } from '@/store/app'
+import {
+  setFaviconByDepartment,
+  setLoginFavicon,
+  updatePageTitle
+} from '@/utils/favicon'
 
 import MainLayout from '@/components/MainLayout.vue'
 // 引入新布局
@@ -375,12 +381,53 @@ const routes = [
         meta: { title: '医疗项目', icon: 'List', requiresAuth: true }
       }
     ]
+  },
+
+  // 404 页面路由
+  {
+    path: '/404',
+    name: 'NotFound',
+    component: () => import('@/views/NotFound/index.vue'),
+    meta: {
+      title: '页面未找到',
+      requiresAuth: false
+    }
+  },
+
+  // 捕获所有未匹配的路由，重定向到404
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/404'
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+// ✅ 路由守卫：根据用户登录状态设置favicon
+router.beforeEach((to, _from, next) => {
+  const appStore = useAppStore()
+  const isLoggedIn = appStore.isLoggedIn()
+
+  if (to.path === '/login') {
+    // 进入登录页时，设置登录页favicon
+    setLoginFavicon()
+  } else if (to.path === '/404') {
+    // 404页面保持登录页favicon
+    setLoginFavicon()
+    document.title = '医院门诊 - 页面未找到'
+  } else if (isLoggedIn && appStore.loginData) {
+    // 用户已登录，根据部门类型设置favicon
+    setFaviconByDepartment(appStore.loginData.departmentType)
+    updatePageTitle(
+      appStore.loginData.departmentType,
+      appStore.loginData.departmentName
+    )
+  }
+
+  next()
 })
 
 export default router

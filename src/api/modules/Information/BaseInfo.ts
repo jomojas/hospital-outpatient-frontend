@@ -88,6 +88,13 @@ export function deleteDepartment(departmentId: number) {
   })
 }
 
+export function restoreDepartment(departmentId: number) {
+  return apiRequest<void>({
+    url: `/departments/${departmentId}/restore`,
+    method: 'PUT'
+  })
+}
+
 // =============== 员工管理 ===============
 
 export function listEmployees(params: EmployeeListQueryParams = {}) {

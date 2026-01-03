@@ -62,7 +62,7 @@ const onRoleChange = (v: number | undefined) => {
         <el-option
           v-for="r in props.roles"
           :key="r.roleId"
-          :label="r.roleName"
+          :label="r.description"
           :value="r.roleId"
         />
       </el-select>

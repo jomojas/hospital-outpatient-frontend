@@ -163,37 +163,45 @@ const onLogout = async () => {
   justify-content: space-between;
   align-items: center;
   padding: 0 $padding-lg;
-  background-color: $background-color;
-  border-bottom: 1px solid #e0e0e0;
+  background: linear-gradient(90deg, #f6f9ff 0%, #eef4ff 50%, #fefefe 100%);
+  border-bottom: 1px solid rgba(24, 67, 160, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
 
   .header-left {
     .system-title {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: $text-color;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #163a6b;
     }
   }
 
   .header-right {
     display: flex;
     align-items: center;
-    gap: $padding-base;
+    gap: $padding-lg;
 
     .staff-name,
     .department-name,
     .last-login {
-      color: $text-color-secondary;
+      color: #4a5568;
+      font-weight: 500;
     }
 
     .el-dropdown-link {
       cursor: pointer;
-      color: $text-color;
+      color: #163a6b;
       display: flex;
       align-items: center;
       gap: 4px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(22, 58, 107, 0.04);
+      transition: all 0.2s ease;
 
       &:hover {
-        color: $primary-color;
+        color: #0f5ef7;
+        background: rgba(15, 94, 247, 0.1);
       }
     }
   }

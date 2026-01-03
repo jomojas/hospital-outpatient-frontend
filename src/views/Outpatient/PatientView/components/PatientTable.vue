@@ -578,12 +578,14 @@ async function handleCurrentChange(page: number) {
 </template>
 
 <style scoped lang="scss">
-@use '@/styles/tokens' as *;
+@use '@/styles/semantic' as *;
 
 .patient-table {
   .table-card {
     border-radius: $border-radius-base;
     border: 1px solid $border-color-light;
+    background: $background-color;
+    box-shadow: $shadow-soft;
   }
 
   .table-header {

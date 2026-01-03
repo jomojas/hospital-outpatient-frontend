@@ -28,6 +28,19 @@ const emit = defineEmits<{
   (e: 'submit', payload: CreateDrugRequest | UpdateDrugRequest): void
 }>()
 
+const unitLabelMap: Record<string, string> = {
+  BOX: '盒',
+  BOTTLE: '瓶',
+  PIECE: '片',
+  CAPSULE: '粒'
+}
+
+const isCreate = computed(() => props.mode === 'create')
+
+const unitOptions = computed(() =>
+  props.units.map((u) => ({ value: u, label: unitLabelMap[u] ?? u }))
+)
+
 const visible = ref(props.modelValue)
 watch(
   () => props.modelValue,
@@ -54,7 +67,7 @@ const form = reactive<Form>({
   manufacturer: ''
 })
 
-const rules: FormRules = {
+const baseRules: FormRules = {
   drugCode: [{ required: true, message: '请输入药品编码', trigger: 'blur' }],
   drugName: [{ required: true, message: '请输入药品名称', trigger: 'blur' }],
   categoryId: [{ required: true, message: '请选择分类', trigger: 'change' }],
@@ -67,6 +80,18 @@ const rules: FormRules = {
   retailPrice: [{ required: true, message: '请输入零售价', trigger: 'blur' }],
   manufacturer: [{ required: true, message: '请输入生产厂家', trigger: 'blur' }]
 }
+
+const formRules = computed<FormRules>(() => {
+  if (isCreate.value) {
+    return {
+      ...baseRules,
+      stockQuantity: [
+        { required: true, message: '请输入库存数量', trigger: 'blur' }
+      ]
+    }
+  }
+  return baseRules
+})
 
 const syncFromRow = () => {
   if (props.mode === 'create') {
@@ -151,7 +176,7 @@ const onSubmit = async () => {
     width="720px"
     :close-on-click-modal="false"
   >
-    <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+    <el-form ref="formRef" :model="form" :rules="formRules" label-width="100px">
       <el-form-item label="药品编码" prop="drugCode">
         <el-input v-model="form.drugCode" />
       </el-form-item>
@@ -177,7 +202,7 @@ const onSubmit = async () => {
       <el-form-item label="保质期" prop="shelfLife">
         <el-input v-model="form.shelfLife" placeholder="如：24个月" />
       </el-form-item>
-      <el-form-item label="库存" prop="stockQuantity">
+      <el-form-item v-if="isCreate" label="库存" prop="stockQuantity">
         <el-input v-model="form.stockQuantity" />
       </el-form-item>
       <el-form-item label="规格" prop="specification">
@@ -185,7 +210,12 @@ const onSubmit = async () => {
       </el-form-item>
       <el-form-item label="单位" prop="unit">
         <el-select v-model="form.unit" filterable>
-          <el-option v-for="u in props.units" :key="u" :label="u" :value="u" />
+          <el-option
+            v-for="u in unitOptions"
+            :key="u.value"
+            :label="u.label"
+            :value="u.value"
+          />
         </el-select>
       </el-form-item>
       <el-form-item label="零售价" prop="retailPrice">

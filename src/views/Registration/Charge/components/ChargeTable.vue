@@ -268,22 +268,39 @@ function formatDateTime(dateTime: string): string {
 
 <style scoped lang="scss">
 .charge-table {
+  :deep(.el-card) {
+    border-radius: $border-radius-base * 2;
+    box-shadow: $shadow-soft;
+    border: 1px solid $border-color-light;
+  }
+
   .table-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: $padding-sm $padding-base;
+    background: linear-gradient(
+      90deg,
+      rgba(63, 131, 248, 0.08),
+      rgba(37, 99, 235, 0.04)
+    );
+    border-radius: $border-radius-base * 2;
 
     .header-left {
       display: flex;
       align-items: center;
       gap: $margin-sm;
-      font-weight: 600;
+      font-weight: 700;
       color: $text-color;
     }
 
     .header-right {
       display: flex;
       gap: $margin-sm;
+
+      :deep(.el-button) {
+        border-radius: $border-radius-base * 2;
+      }
     }
   }
 
@@ -332,6 +349,9 @@ function formatDateTime(dateTime: string): string {
 
 .statistics-card {
   margin-top: $margin-base;
+  border-radius: $border-radius-base * 2;
+  box-shadow: $shadow-soft;
+  border: 1px solid $border-color-light;
 
   .card-header {
     display: flex;

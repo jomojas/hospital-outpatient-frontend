@@ -74,19 +74,11 @@ export const useLookupStore = defineStore('lookup', () => {
     }
   })
 
-  // // 根据医生专家状态获取可用号别
+  // 根据医生专家状态获取可用号别
   const getAvailableNumberTypes = computed(() => {
-    return (isExpert: boolean) => {
-      if (isExpert) {
-        // 专家医生可以挂专家号或者普通号
-        return numberTypes.value.filter(
-          (type) =>
-            type.numberType === 'SPECIALIST' || type.numberType === 'GENERAL'
-        )
-      } else {
-        // 普通医生只能挂选择普通号
-        return numberTypes.value.filter((type) => type.numberType === 'GENERAL')
-      }
+    return (_isExpert: boolean) => {
+      // 返回所有号别，不进行过滤
+      return numberTypes.value
     }
   })
 

@@ -47,7 +47,7 @@ export const useInformationCatalogStore = defineStore(
 
     const drugCategories = ref<DrugCategoryResponse[]>([])
     const drugUnits = ref<DrugUnitCode[]>([])
-    const itemTypes = ref<Array<{ type: string; typeName: string }>>([])
+    const itemTypes = ref<Array<{ code: string; name: string }>>([])
 
     async function fetchDictionaries() {
       dictionariesLoading.value = true

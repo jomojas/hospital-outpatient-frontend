@@ -39,8 +39,8 @@ function onSearch(payload: SearchPayload) {
 .registration-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: $padding-base;
-  background-color: $background-color-secondary;
+  padding: $padding-lg;
+  background: linear-gradient(135deg, #f7fbff 0%, #f1f5ff 40%, #ffffff 100%);
   min-height: 100vh;
 }
 
@@ -52,15 +52,15 @@ function onSearch(payload: SearchPayload) {
   :deep(.el-card) {
     max-width: 900px;
     margin: 0 auto;
-    border-radius: $border-radius-base;
+    border-radius: $border-radius-base * 2;
     border: 1px solid $border-color-light;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: $shadow-soft;
     transition: all 0.3s ease;
     background-color: $background-color;
 
     &:hover {
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-      border-color: $border-color;
+      box-shadow: $shadow-strong;
+      border-color: $primary-color;
     }
   }
 

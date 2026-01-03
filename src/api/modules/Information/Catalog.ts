@@ -41,8 +41,8 @@ export function listDrugUnits() {
 export function listItemTypes() {
   return apiRequest<
     Array<{
-      type: string
-      typeName: string
+      code: string
+      name: string
     }>
   >({
     url: '/dictionaries/item-types',
@@ -92,6 +92,14 @@ export function listMedicalItems(params: MedicalItemQueryParams = {}) {
     url: '/items',
     method: 'GET',
     params: cleanParams(params as Record<string, unknown>)
+  })
+}
+
+export function generateMedicalItemCode(type: string) {
+  return apiRequest<string>({
+    url: '/items/next-code',
+    method: 'GET',
+    params: { type }
   })
 }
 

@@ -17,6 +17,7 @@ export interface DrugDetailResponse {
   drugId: string
   drugCode: string
   drugName: string
+  status: 0 | 1
   categoryId: number
   categoryName: string
   categoryDescription: string

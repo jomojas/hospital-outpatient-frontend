@@ -11,6 +11,7 @@ defineProps<{
 const emit = defineEmits<{
   (e: 'edit', row: DepartmentResponse): void
   (e: 'delete', row: DepartmentResponse): void
+  (e: 'restore', row: DepartmentResponse): void
 }>()
 
 const onDelete = async (row: DepartmentResponse) => {
@@ -24,6 +25,19 @@ const onDelete = async (row: DepartmentResponse) => {
     }
   )
   emit('delete', row)
+}
+
+const onRestore = async (row: DepartmentResponse) => {
+  await ElMessageBox.confirm(
+    `确定恢复科室【${row.departmentName}】吗？`,
+    '确认恢复',
+    {
+      confirmButtonText: '恢复',
+      cancelButtonText: '取消',
+      type: 'info'
+    }
+  )
+  emit('restore', row)
 }
 </script>
 
@@ -44,7 +58,16 @@ const onDelete = async (row: DepartmentResponse) => {
         <el-button link type="primary" @click="emit('edit', row)"
           >编辑</el-button
         >
-        <el-button link type="danger" @click="onDelete(row)">删除</el-button>
+        <el-button
+          v-if="row.status === 1"
+          link
+          type="danger"
+          @click="onDelete(row)"
+          >删除</el-button
+        >
+        <el-button v-else link type="success" @click="onRestore(row)"
+          >恢复</el-button
+        >
       </template>
     </el-table-column>
   </el-table>

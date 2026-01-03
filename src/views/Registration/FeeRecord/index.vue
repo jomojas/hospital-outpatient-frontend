@@ -101,22 +101,22 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
-@use '@/styles/tokens' as *;
+@use '@/styles/semantic' as *;
 
 .fee-record-page {
   min-height: 100vh;
-  padding: $padding-base;
-  background-color: $background-color-secondary;
+  padding: $padding-lg;
+  background: linear-gradient(135deg, #f7fbff 0%, #f1f5ff 40%, #ffffff 100%);
   font-family: $font-family-body;
 
   .page-header {
     margin-bottom: $margin-lg;
-    padding: $padding-base;
-    background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
-    border-radius: $border-radius-base;
-    color: $background-color;
+    padding: $padding-lg;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #0f6b2f 100%);
+    border-radius: $border-radius-base * 2;
+    color: $white;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(82, 196, 26, 0.15);
+    box-shadow: $shadow-soft;
 
     h2 {
       margin: 0 0 $margin-sm 0;
@@ -145,16 +145,18 @@ onUnmounted(() => {
   .loading-container {
     margin: $margin-lg 0;
     background-color: $background-color;
-    border-radius: $border-radius-base;
+    border-radius: $border-radius-base * 2;
     border: 1px solid $border-color-light;
+    box-shadow: $shadow-soft;
   }
 
   .error-container {
     margin: $margin-lg 0;
     background: $background-color;
-    border-radius: $border-radius-base;
+    border-radius: $border-radius-base * 2;
     padding: $padding-lg;
     border: 1px solid $border-color-light;
+    box-shadow: $shadow-soft;
     font-family: $font-family-body;
   }
 

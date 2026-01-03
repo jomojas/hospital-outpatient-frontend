@@ -288,10 +288,10 @@ async function handleStatCardClick(status?: FrontendPatientStatusType) {
 </template>
 
 <style scoped lang="scss">
-@use '@/styles/tokens' as *;
+@use '@/styles/semantic' as *;
 
 .patient-search-form {
-  margin-bottom: $margin-base;
+  margin-bottom: $margin-lg;
 
   // ✅ 重新设计统计卡片样式
   .statistics-container {
@@ -313,7 +313,7 @@ async function handleStatCardClick(status?: FrontendPatientStatusType) {
 
       // ✅ 默认悬停效果（轻微）
       &:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        box-shadow: $shadow-soft;
         transform: translateY(-2px);
         border-color: $border-color;
 
@@ -324,25 +324,15 @@ async function handleStatCardClick(status?: FrontendPatientStatusType) {
 
       // ✅ 重新设计激活状态
       &.active {
-        background: linear-gradient(
-          135deg,
-          rgba($primary-color, 0.04) 0%,
-          rgba($primary-color, 0.08) 100%
-        );
-        border: 1px solid rgba($primary-color, 0.3);
-        box-shadow: 0 4px 12px rgba($primary-color, 0.15),
-          inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        background: $background-color;
+        border: 1px solid $primary-color;
+        box-shadow: $shadow-soft;
 
         // ✅ 激活状态下的悬停效果（更优雅）
         &:hover {
-          background: linear-gradient(
-            135deg,
-            rgba($primary-color, 0.06) 0%,
-            rgba($primary-color, 0.12) 100%
-          );
-          border-color: rgba($primary-color, 0.5);
-          box-shadow: 0 6px 16px rgba($primary-color, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.8);
+          background: rgba($primary-color, 0.06);
+          border-color: $primary-hover;
+          box-shadow: $shadow-strong;
           transform: translateY(-3px);
         }
 
@@ -354,17 +344,13 @@ async function handleStatCardClick(status?: FrontendPatientStatusType) {
           top: 0;
           bottom: 0;
           width: 4px;
-          background: linear-gradient(
-            180deg,
-            $primary-color 0%,
-            $primary-hover 100%
-          );
+          background: $primary-color;
           border-radius: 0 2px 2px 0;
         }
 
         .stat-content .stat-icon {
           transform: scale(1.08);
-          box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+          box-shadow: $shadow-soft;
         }
 
         .stat-info {
@@ -397,8 +383,7 @@ async function handleStatCardClick(status?: FrontendPatientStatusType) {
           position: relative;
 
           // ✅ 添加内阴影效果
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+          box-shadow: $shadow-soft;
 
           .el-icon {
             font-size: 24px;
@@ -429,35 +414,25 @@ async function handleStatCardClick(status?: FrontendPatientStatusType) {
         }
       }
 
-      // ✅ 优化的5个卡片配色（更丰富的渐变）
+      // ✅ 统一卡片配色为纯色
       &.total .stat-icon {
-        background: linear-gradient(
-          135deg,
-          #409eff 0%,
-          #67c23a 50%,
-          #409eff 100%
-        );
+        background: $primary-color;
       }
 
       &.waiting-initial .stat-icon {
-        background: linear-gradient(135deg, #ff7875 0%, #ffa940 100%);
+        background: #f97316;
       }
 
       &.after-initial .stat-icon {
-        background: linear-gradient(135deg, #8c8c8c 0%, #595959 100%);
+        background: #595959;
       }
 
       &.waiting-revisit .stat-icon {
-        background: linear-gradient(135deg, #52c41a 0%, #1890ff 100%);
+        background: #1890ff;
       }
 
       &.revisit-completed .stat-icon {
-        background: linear-gradient(
-          135deg,
-          #52c41a 0%,
-          #73d13d 50%,
-          #52c41a 100%
-        );
+        background: #52c41a;
       }
     }
   }
@@ -465,11 +440,12 @@ async function handleStatCardClick(status?: FrontendPatientStatusType) {
   .search-card {
     border-radius: $border-radius-base;
     border: 1px solid $border-color-light;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    transition: box-shadow 0.3s ease;
+    box-shadow: $shadow-soft;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
 
     &:hover {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: $shadow-strong;
+      transform: translateY(-1px);
     }
 
     .card-header {
@@ -487,17 +463,17 @@ async function handleStatCardClick(status?: FrontendPatientStatusType) {
         border: none;
 
         &.el-tag--success {
-          background: linear-gradient(135deg, #f6ffed, #d9f7be);
+          background: rgba(82, 196, 26, 0.12);
           color: #389e0d;
         }
 
         &.el-tag--warning {
-          background: linear-gradient(135deg, #fffbe6, #fff1b8);
+          background: rgba(212, 136, 6, 0.12);
           color: #d48806;
         }
 
         &.el-tag--info {
-          background: linear-gradient(135deg, #f0f9ff, #bae7ff);
+          background: rgba(24, 144, 255, 0.12);
           color: #1890ff;
         }
       }
@@ -533,12 +509,12 @@ async function handleStatCardClick(status?: FrontendPatientStatusType) {
 
             &:hover {
               border-color: $primary-hover;
-              box-shadow: 0 0 0 2px rgba($primary-color, 0.1);
+              box-shadow: 0 0 0 2px rgba($primary-color, 0.08);
             }
 
             &:focus {
               border-color: $primary-color;
-              box-shadow: 0 0 0 2px rgba($primary-color, 0.15);
+              box-shadow: 0 0 0 2px rgba($primary-color, 0.12);
             }
           }
         }
@@ -561,23 +537,19 @@ async function handleStatCardClick(status?: FrontendPatientStatusType) {
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: $shadow-soft;
   }
 }
 
 :deep(.el-button--primary) {
-  background: linear-gradient(135deg, $primary-color 0%, $primary-hover 100%);
+  background: $primary-color;
   border-color: $primary-color;
-  box-shadow: 0 2px 4px rgba($primary-color, 0.2);
+  box-shadow: $shadow-soft;
 
   &:hover {
-    background: linear-gradient(
-      135deg,
-      $primary-hover 0%,
-      $primary-active 100%
-    );
+    background: $primary-hover;
     border-color: $primary-hover;
-    box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+    box-shadow: $shadow-strong;
   }
 }
 

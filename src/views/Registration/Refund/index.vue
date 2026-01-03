@@ -33,8 +33,8 @@ onMounted(() => {
 .refund-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: $padding-base;
-  background-color: $background-color-secondary;
+  padding: $padding-lg;
+  background: linear-gradient(135deg, #f7fbff 0%, #f1f5ff 40%, #ffffff 100%);
   min-height: 100vh;
 }
 
@@ -44,8 +44,9 @@ onMounted(() => {
 
 .table-section {
   background-color: $background-color;
-  border-radius: $border-radius-base;
+  border-radius: $border-radius-base * 2;
   padding: $padding-lg;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: $shadow-soft;
+  border: 1px solid $border-color-light;
 }
 </style>

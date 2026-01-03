@@ -4,6 +4,7 @@ export interface RegistrationLevelResponse {
   code: string
   name: string
   price: Money
+  status: 0 | 1
 }
 
 export interface SetRegistrationPriceRequest {

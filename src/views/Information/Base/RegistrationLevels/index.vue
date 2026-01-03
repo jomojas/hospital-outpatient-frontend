@@ -67,6 +67,7 @@ const onSetStatus = async (payload: UpdateRegistrationLevelStatusParams) => {
   actionLoading.value = true
   try {
     await store.handleUpdateRegistrationLevelStatus(payload)
+    await store.fetchRegistrationLevels()
   } finally {
     actionLoading.value = false
   }

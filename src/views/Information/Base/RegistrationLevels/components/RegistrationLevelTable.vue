@@ -27,6 +27,13 @@ const onDisable = (row: RegistrationLevelResponse) => {
     <el-table-column prop="code" label="编码" width="140" />
     <el-table-column prop="name" label="名称" min-width="160" />
     <el-table-column prop="price" label="价格" min-width="120" />
+    <el-table-column label="状态" width="120" align="center">
+      <template #default="{ row }">
+        <el-tag :type="row.status === 1 ? 'success' : 'info'">
+          {{ row.status === 1 ? '启用' : '禁用' }}
+        </el-tag>
+      </template>
+    </el-table-column>
     <el-table-column label="操作" width="240" align="center">
       <template #default="{ row }">
         <el-button
@@ -37,8 +44,17 @@ const onDisable = (row: RegistrationLevelResponse) => {
         >
           修改价格
         </el-button>
-        <el-button link type="success" @click="onEnable(row)">启用</el-button>
-        <el-button link type="warning" @click="onDisable(row)">停用</el-button>
+        <el-button
+          v-if="row.status !== 1"
+          link
+          type="success"
+          @click="onEnable(row)"
+        >
+          启用
+        </el-button>
+        <el-button v-else link type="warning" @click="onDisable(row)">
+          禁用
+        </el-button>
       </template>
     </el-table-column>
   </el-table>

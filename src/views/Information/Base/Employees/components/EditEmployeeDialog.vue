@@ -41,6 +41,14 @@ const form = reactive<UpdateEmployeeDTO>({
   isExpert: false
 })
 
+const isDoctorRole = computed(() => {
+  const roleId = Number(form.roleId)
+  const role = props.roles.find((r) => r.roleId === roleId)
+  const code = String(role?.roleName ?? '').toUpperCase()
+  const label = String(role?.description ?? '')
+  return code === 'DOCTOR' || label.includes('医生')
+})
+
 const rules: FormRules = {
   name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
   phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
@@ -69,14 +77,30 @@ watch(
   { immediate: true }
 )
 
+watch(
+  () => form.roleId,
+  () => {
+    if (!isDoctorRole.value) {
+      form.isExpert = false
+    }
+  }
+)
+
 const onSubmit = async () => {
   const valid = await formRef.value?.validate().catch(() => false)
   if (!valid) return
-  emit('submit', {
+
+  const payload: UpdateEmployeeDTO = {
     ...form,
     departmentId: Number(form.departmentId),
     roleId: Number(form.roleId)
-  })
+  }
+
+  if (!isDoctorRole.value) {
+    delete (payload as any).isExpert
+  }
+
+  emit('submit', payload)
 }
 </script>
 
@@ -116,12 +140,12 @@ const onSubmit = async () => {
           <el-option
             v-for="r in props.roles"
             :key="r.roleId"
-            :label="r.roleName"
+            :label="r.description"
             :value="r.roleId"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="专家">
+      <el-form-item v-if="isDoctorRole" label="专家">
         <el-switch v-model="form.isExpert" />
       </el-form-item>
     </el-form>

@@ -10,12 +10,31 @@ type Item = { name: string; value: number }
 const props = defineProps<{
   title: string
   data: Item[]
+  unit?: string
 }>()
 
 const option = computed<ECBasicOption>(() => {
+  const unit = props.unit ?? ''
   return {
     title: { text: props.title, left: 'center', textStyle: { fontSize: 14 } },
-    tooltip: { trigger: 'item' },
+    tooltip: {
+      trigger: 'item',
+      formatter: (params: unknown) => {
+        const p = (params ?? {}) as any
+        const name = p.name ?? ''
+        const value = p.value ?? 0
+        const percent = p.percent
+        const valueText = `${value}${unit}`
+        if (
+          percent === undefined ||
+          percent === null ||
+          Number.isNaN(Number(percent))
+        ) {
+          return `${name}: ${valueText}`
+        }
+        return `${name}: ${valueText}<br/>占比: ${percent}%`
+      }
+    },
     legend: { bottom: 0, type: 'scroll' },
     series: [
       {

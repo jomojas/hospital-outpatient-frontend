@@ -203,14 +203,45 @@ async function handleReset() {
 
 <style scoped lang="scss">
 .charge-search-form {
-  margin-bottom: 20px;
+  margin-bottom: $margin-lg;
 
   .search-card {
+    border: 1px solid $border-color-light;
+    box-shadow: $shadow-soft;
+    border-radius: $border-radius-base * 2;
+
     .card-header {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-weight: 600;
+      gap: $margin-sm;
+      font-weight: 700;
+      color: $text-color;
+      font-size: $font-subtitle;
+    }
+
+    :deep(.el-card__header) {
+      padding: $padding-sm $padding-base;
+      border-bottom: 1px solid $border-color-light;
+    }
+
+    .search-form {
+      padding: $padding-base $padding-base $padding-sm;
+
+      :deep(.el-form-item__label) {
+        color: $text-color-secondary;
+        font-weight: 500;
+      }
+
+      :deep(.el-input__wrapper),
+      :deep(.el-select .el-select__wrapper) {
+        border-radius: $border-radius-base * 2;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7),
+          0 6px 16px rgba(12, 35, 64, 0.05);
+      }
+
+      :deep(.el-button) {
+        border-radius: $border-radius-base * 2;
+      }
     }
   }
 }

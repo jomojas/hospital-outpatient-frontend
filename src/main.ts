@@ -11,6 +11,7 @@ import '@/styles/index.scss'
 
 import App from './App.vue'
 import router from '@/router'
+import { setLoginFavicon } from '@/utils/favicon'
 
 const app = createApp(App)
 
@@ -24,5 +25,8 @@ app.use(pinia)
 app.use(router)
 app.use(ElementPlus, { locale: zhCn }) // 配置中文
 app.component('v-chart', VChart) // 注册 ECharts 组件
+
+// 设置初始favicon为登录页图标
+setLoginFavicon()
 
 app.mount('#app')

@@ -8,6 +8,11 @@ defineProps<{
   loading: boolean
 }>()
 
+function formatDateTime(value: string) {
+  if (!value) return '-'
+  return value.replace('T', ' ').replace(/\.\d+/, '').replace(/Z$/, '')
+}
+
 const emit = defineEmits<{
   (e: 'edit', row: StaffDetailResponse): void
   (e: 'resetPwd', row: StaffDetailResponse): void
@@ -40,14 +45,29 @@ const onRestore = async (row: StaffDetailResponse) => {
     <el-table-column prop="name" label="姓名" min-width="120" />
     <el-table-column prop="phone" label="手机号" min-width="140" />
     <el-table-column prop="departmentName" label="科室" min-width="140" />
-    <el-table-column prop="roleName" label="角色" min-width="140" />
+    <el-table-column label="描述" min-width="140">
+      <template #default="{ row }">
+        {{ row.description || row.roleName || '-' }}
+      </template>
+    </el-table-column>
     <el-table-column label="专家" width="90" align="center">
       <template #default="{ row }">
         <el-tag v-if="row.isExpert" type="success" effect="plain">是</el-tag>
         <span v-else>-</span>
       </template>
     </el-table-column>
-    <el-table-column prop="createTime" label="创建时间" min-width="160" />
+    <el-table-column label="在职" width="90" align="center">
+      <template #default="{ row }">
+        <el-tag :type="row.status === 1 ? 'success' : 'info'" effect="plain">
+          {{ row.status === 1 ? '在职' : '离职' }}
+        </el-tag>
+      </template>
+    </el-table-column>
+    <el-table-column label="创建时间" min-width="170">
+      <template #default="{ row }">
+        {{ formatDateTime(row.createTime) }}
+      </template>
+    </el-table-column>
     <el-table-column label="操作" width="300" align="center">
       <template #default="{ row }">
         <el-button link type="primary" @click="emit('edit', row)"
@@ -56,8 +76,16 @@ const onRestore = async (row: StaffDetailResponse) => {
         <el-button link type="primary" @click="emit('resetPwd', row)"
           >重置密码</el-button
         >
-        <el-button link type="warning" @click="onRestore(row)">恢复</el-button>
-        <el-button link type="danger" @click="onDelete(row)">删除</el-button>
+        <el-button
+          v-if="row.status !== 1"
+          link
+          type="success"
+          @click="onRestore(row)"
+          >恢复</el-button
+        >
+        <el-button v-else link type="danger" @click="onDelete(row)"
+          >删除</el-button
+        >
       </template>
     </el-table-column>
   </el-table>

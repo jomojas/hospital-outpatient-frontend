@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { ElMessageBox } from 'element-plus'
 
 import { useInformationCatalogStore } from '@/store/Information/CatalogStore'
 import type {
@@ -76,15 +75,6 @@ const toggleStatus = async (row: DrugDetailResponse) => {
     actionLoading.value = false
   }
 }
-
-const onDeletePlaceholder = async (row: DrugDetailResponse) => {
-  // 后端暂未提供删除接口，这里保留入口并给出确认提示，避免误操作
-  await ElMessageBox.confirm(
-    `当前版本不支持删除药品：${row.drugName}`,
-    '提示',
-    { confirmButtonText: '确定', showCancelButton: false, type: 'info' }
-  )
-}
 </script>
 
 <template>
@@ -107,7 +97,6 @@ const onDeletePlaceholder = async (row: DrugDetailResponse) => {
         :loading="store.drugCatalogLoading"
         @edit="openEdit"
         @toggle-status="toggleStatus"
-        @delete-placeholder="onDeletePlaceholder"
       />
 
       <div class="pagination">

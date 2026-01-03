@@ -110,22 +110,22 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
-@use '@/styles/tokens' as *;
+@use '@/styles/semantic' as *;
 
 .patient-view-page {
   min-height: 100vh;
-  padding: $padding-base;
+  padding: $padding-lg;
   background-color: $background-color-secondary;
   font-family: $font-family-body;
 
   .page-header {
     margin-bottom: $margin-lg;
-    padding: $padding-base;
-    background: linear-gradient(135deg, #409eff 0%, #67c23a 100%);
-    border-radius: $border-radius-base;
+    padding: $padding-lg;
+    background: $primary-color;
+    border-radius: $border-radius-base * 2;
     color: $background-color;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
+    box-shadow: $shadow-soft;
 
     h2 {
       margin: 0 0 $margin-sm 0;

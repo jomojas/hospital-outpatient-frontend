@@ -23,6 +23,7 @@ export interface StaffDetailResponse {
   description: string
   isExpert: boolean | null
   createTime: string
+  status: number // 1-在职，0-不在职
 }
 
 export type EmployeeListResponse = PaginatedResponse<StaffDetailResponse>

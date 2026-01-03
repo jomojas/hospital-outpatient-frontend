@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessage } from 'element-plus'
 
+import { generateMedicalItemCode } from '@/api/modules/Information/Catalog'
 import type { DepartmentResponse } from '@/types/Information/Department'
 import type {
   CreateMedicalItemRequest,
@@ -15,7 +17,7 @@ const props = defineProps<{
   modelValue: boolean
   mode: Mode
   row: MedicalItemResponse | null
-  itemTypes: Array<{ type: string; typeName: string }>
+  itemTypes: Array<{ code: string; name: string }>
   departments: DepartmentResponse[]
   loading?: boolean
 }>()
@@ -38,6 +40,9 @@ watch(visible, (v) => emit('update:modelValue', v))
 const title = computed(() =>
   props.mode === 'create' ? '新增医疗项目' : '编辑医疗项目'
 )
+
+const isCreate = computed(() => props.mode === 'create')
+const generatingCode = ref(false)
 
 const formRef = ref<FormInstance>()
 const form = reactive<CreateMedicalItemRequest>({
@@ -89,6 +94,20 @@ watch(
   { immediate: true }
 )
 
+const handleItemTypeChange = async () => {
+  if (!isCreate.value || !form.itemType) return
+
+  generatingCode.value = true
+  try {
+    const code = await generateMedicalItemCode(form.itemType)
+    form.itemCode = code
+  } catch (error) {
+    ElMessage.error('生成项目编码失败')
+  } finally {
+    generatingCode.value = false
+  }
+}
+
 const onSubmit = async () => {
   const valid = await formRef.value?.validate().catch(() => false)
   if (!valid) return
@@ -113,18 +132,23 @@ const onSubmit = async () => {
   >
     <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
       <el-form-item label="项目编码" prop="itemCode">
-        <el-input v-model="form.itemCode" />
+        <el-input v-model="form.itemCode" :disabled="true" />
       </el-form-item>
       <el-form-item label="项目名称" prop="itemName">
         <el-input v-model="form.itemName" />
       </el-form-item>
       <el-form-item label="项目类型" prop="itemType">
-        <el-select v-model="form.itemType" filterable>
+        <el-select
+          v-model="form.itemType"
+          filterable
+          :loading="generatingCode"
+          @change="handleItemTypeChange"
+        >
           <el-option
             v-for="t in props.itemTypes"
-            :key="t.type"
-            :label="t.typeName"
-            :value="t.type"
+            :key="t.code"
+            :label="t.name"
+            :value="t.code"
           />
         </el-select>
       </el-form-item>

@@ -56,21 +56,22 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .charge-page {
   min-height: 100vh;
-  padding: 20px;
-  background-color: #f5f7fa;
+  padding: $padding-lg;
+  background: linear-gradient(135deg, #f7fbff 0%, #f2f6ff 40%, #ffffff 100%);
 
   .page-header {
-    margin-bottom: 24px;
-    padding: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 8px;
-    color: white;
+    margin-bottom: $margin-lg;
+    padding: $padding-lg;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1e3a8a 100%);
+    border-radius: $border-radius-base * 2;
+    color: $white;
     text-align: center;
+    box-shadow: $shadow-soft;
 
     h2 {
       margin: 0 0 8px 0;
-      font-size: 28px;
-      font-weight: 600;
+      font-size: 26px;
+      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -83,9 +84,9 @@ onUnmounted(() => {
 
     .page-description {
       margin: 0;
-      font-size: 16px;
+      font-size: 15px;
       opacity: 0.9;
-      font-weight: 400;
+      font-weight: 500;
     }
   }
 
@@ -99,7 +100,8 @@ onUnmounted(() => {
     max-width: 600px;
 
     :deep(.el-alert) {
-      box-shadow: 0 4px 12px rgba(245, 108, 108, 0.15);
+      box-shadow: $shadow-soft;
+      border-radius: $border-radius-base * 2;
     }
   }
 }

@@ -27,9 +27,40 @@ const props = defineProps<{
   refundTrend: RefundTrendResponse | null
 }>()
 
+function mapRegistrationTypeLabel(name: string): string {
+  const key = String(name ?? '').toUpperCase()
+  const map: Record<string, string> = {
+    GENERAL: '普通号',
+    SPECIALIST: '专家号',
+    EMERGENCY: '急诊'
+  }
+  return map[key] ?? name
+}
+
+function mapRevenueTypeLabel(type: string): string {
+  const key = String(type ?? '').toUpperCase()
+  const map: Record<string, string> = {
+    REGISTRATION: '挂号费',
+    MEDICAL_ITEM: '医疗项目',
+    DRUG: '药品'
+  }
+  return map[key] ?? type
+}
+
+const registrationsTypePie = computed(() => {
+  const items = props.registrationsTypeBreakdown ?? []
+  return items.map((i) => ({
+    name: mapRegistrationTypeLabel(i.name),
+    value: Number(i.value ?? 0)
+  }))
+})
+
 const revenueTypePie = computed(() => {
   const items = props.revenueByType?.items ?? []
-  return items.map((i) => ({ name: i.type, value: Number(i.amount ?? 0) }))
+  return items.map((i) => ({
+    name: mapRevenueTypeLabel(i.type),
+    value: Number(i.amount ?? 0)
+  }))
 })
 
 const revenueDepartmentRank = computed(() => {
@@ -45,13 +76,22 @@ const revenueDepartmentRank = computed(() => {
   <el-row :gutter="12">
     <el-col :xs="24" :md="12">
       <el-card>
-        <stats-line-chart title="挂号趋势" :data="registrationsTrend" />
+        <stats-line-chart
+          title="挂号数量"
+          metric-label="挂号数量"
+          :data="registrationsTrend"
+        />
       </el-card>
     </el-col>
 
     <el-col :xs="24" :md="12">
       <el-card>
-        <stats-line-chart title="收入趋势" :data="revenueTrend" unit="" />
+        <stats-line-chart
+          title="收入金额"
+          metric-label="收入金额"
+          :data="revenueTrend"
+          unit="元"
+        />
       </el-card>
     </el-col>
   </el-row>
@@ -59,16 +99,18 @@ const revenueDepartmentRank = computed(() => {
   <el-row :gutter="12" class="row">
     <el-col :xs="24" :md="12">
       <el-card>
-        <stats-line-chart title="退款趋势" :data="refundTrend" />
+        <stats-line-chart
+          title="退款金额"
+          metric-label="退款金额"
+          :data="refundTrend"
+          unit="元"
+        />
       </el-card>
     </el-col>
 
     <el-col :xs="24" :md="12">
       <el-card>
-        <stats-pie-chart
-          title="挂号类型占比"
-          :data="registrationsTypeBreakdown"
-        />
+        <stats-pie-chart title="挂号类型占比" :data="registrationsTypePie" />
       </el-card>
     </el-col>
   </el-row>
@@ -89,12 +131,21 @@ const revenueDepartmentRank = computed(() => {
   <el-row :gutter="12" class="row">
     <el-col :xs="24" :md="12">
       <el-card>
-        <stats-pie-chart title="收入类型占比" :data="revenueTypePie" />
+        <stats-pie-chart
+          title="收入类型占比"
+          :data="revenueTypePie"
+          unit="元"
+        />
       </el-card>
     </el-col>
 
     <el-col :xs="24" :md="12">
-      <stats-rank-table title="科室收入 Top" :data="revenueDepartmentRank" />
+      <stats-rank-table
+        title="科室收入 Top"
+        :data="revenueDepartmentRank"
+        value-label="金额"
+        unit="元"
+      />
     </el-col>
   </el-row>
 </template>

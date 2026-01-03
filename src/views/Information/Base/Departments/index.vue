@@ -23,7 +23,7 @@ const initialRoleIds = ref<number[]>([])
 onMounted(async () => {
   await Promise.all([
     store.fetchDepartmentTypes(),
-    store.fetchDepartments(),
+    store.fetchAllDepartments(),
     store.fetchStaffRoles()
   ])
 })
@@ -63,7 +63,7 @@ async function onSubmit(
       )
     }
     dialogVisible.value = false
-    await store.fetchDepartments()
+    await store.fetchAllDepartments()
   } finally {
     actionLoading.value = false
   }
@@ -73,7 +73,17 @@ async function onDelete(row: DepartmentResponse) {
   actionLoading.value = true
   try {
     await store.handleDeleteDepartment(row.departmentId)
-    await store.fetchDepartments()
+    await store.fetchAllDepartments()
+  } finally {
+    actionLoading.value = false
+  }
+}
+
+async function onRestore(row: DepartmentResponse) {
+  actionLoading.value = true
+  try {
+    await store.handleRestoreDepartment(row.departmentId)
+    await store.fetchAllDepartments()
   } finally {
     actionLoading.value = false
   }
@@ -83,17 +93,18 @@ async function onDelete(row: DepartmentResponse) {
 <template>
   <div class="information-page">
     <DepartmentsToolbar
-      :loading="store.departmentsLoading || actionLoading"
+      :loading="store.allDepartmentsLoading || actionLoading"
       @create="openCreate"
-      @refresh="store.fetchDepartments()"
+      @refresh="store.fetchAllDepartments()"
     />
 
     <el-card>
       <DepartmentsTable
-        :data="store.departments"
-        :loading="store.departmentsLoading"
+        :data="store.allDepartments"
+        :loading="store.allDepartmentsLoading"
         @edit="openEdit"
         @delete="onDelete"
+        @restore="onRestore"
       />
     </el-card>
 

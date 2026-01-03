@@ -598,22 +598,4 @@ watch(
   justify-content: space-between;
   align-items: center;
 }
-
-// 响应式设计
-@media (max-width: 768px) {
-  .registration-form {
-    margin: 0 $margin-sm;
-  }
-
-  .registration-form-content {
-    :deep(.el-form-item__label) {
-      width: 100px !important;
-    }
-  }
-
-  .doctor-info {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
 </style>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="disposeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f93456;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#eb2f96;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" fill="url(#disposeGradient)"/>
+  <!-- 处置科 - 医疗工具 -->
+  <circle cx="40" cy="45" r="18" fill="white"/>
+  <circle cx="60" cy="45" r="18" fill="white"/>
+  <path d="M 50 30 L 45 50 L 55 50 Z" fill="white"/>
+  <!-- 工具符号 -->
+  <line x1="35" y1="40" x2="45" y2="50" stroke="#f93456" stroke-width="2"/>
+  <line x1="55" y1="50" x2="65" y2="40" stroke="#f93456" stroke-width="2"/>
+</svg>

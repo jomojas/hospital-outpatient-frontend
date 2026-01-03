@@ -18,6 +18,7 @@ import {
   listRegistrationLevels,
   listStaffRoles,
   resetEmployeePassword,
+  restoreDepartment,
   restoreEmployee,
   updateDepartment,
   updateEmployee,
@@ -123,6 +124,11 @@ export const useInformationBaseInfoStore = defineStore(
     async function handleDeleteDepartment(departmentId: number) {
       await deleteDepartment(departmentId)
       ElMessage.success('科室删除成功')
+    }
+
+    async function handleRestoreDepartment(departmentId: number) {
+      await restoreDepartment(departmentId)
+      ElMessage.success('科室已恢复')
     }
 
     // =============== 员工管理 ===============
@@ -261,6 +267,7 @@ export const useInformationBaseInfoStore = defineStore(
       handleCreateDepartment,
       handleUpdateDepartment,
       handleDeleteDepartment,
+      handleRestoreDepartment,
 
       // 员工
       staffRolesLoading,

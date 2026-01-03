@@ -52,6 +52,14 @@ export const useInformationOverviewStore = defineStore(
           ...params
         }
 
+        const requestQuery: StatsPeriodQuery = {
+          period: merged.period
+        }
+        if (merged.period === 'auto') {
+          if (merged.startDate) requestQuery.startDate = merged.startDate
+          if (merged.endDate) requestQuery.endDate = merged.endDate
+        }
+
         const [
           trend,
           typeBreakdown,
@@ -62,14 +70,14 @@ export const useInformationOverviewStore = defineStore(
           revByDept,
           refund
         ] = await Promise.all([
-          getRegistrationsTrend(merged),
-          getRegistrationsTypeBreakdown(merged),
-          getRegistrationsByDepartment(merged),
-          getRegistrationsByDoctor(merged),
-          getRevenueTrend(merged),
-          getRevenueByType(merged),
-          getRevenueByDepartment(merged),
-          getRefundTrend(merged)
+          getRegistrationsTrend(requestQuery),
+          getRegistrationsTypeBreakdown(requestQuery),
+          getRegistrationsByDepartment(requestQuery),
+          getRegistrationsByDoctor(requestQuery),
+          getRevenueTrend(requestQuery),
+          getRevenueByType(requestQuery),
+          getRevenueByDepartment(requestQuery),
+          getRefundTrend(requestQuery)
         ])
 
         registrationsTrend.value = trend
